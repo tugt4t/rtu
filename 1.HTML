@@ -1,0 +1,3253 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#2a5298">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>澳门·风景印象 - 全平台适配版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+            color: #2d3e50;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 10% 20%, rgba(102, 126, 234, 0.1) 0%, transparent 20%),
+                        radial-gradient(circle at 90% 80%, rgba(118, 75, 162, 0.1) 0%, transparent 20%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 加载动画 */
+        .loader-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.3s;
+        }
+
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #2a5298;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .nav-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.7rem 0;
+            border-bottom: 1px solid #eef2f7;
+            min-height: 56px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .logo-icon {
+            font-size: 1.6rem;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-main {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e3c72;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-sub {
+            font-size: 0.65rem;
+            color: #9aaec2;
+        }
+
+        .nav-tools {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .favorites-nav-btn {
+            position: relative;
+            background: linear-gradient(135deg, #fff5f5, #ffffff);
+            border: 1px solid #ffe2e2;
+            padding: 0.45rem 0.9rem;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-weight: 500;
+            color: #ff6b6b;
+            box-shadow: 0 2px 4px rgba(255, 107, 107, 0.1);
+        }
+
+        .favorites-nav-btn:active {
+            transform: scale(0.96);
+            box-shadow: 0 1px 2px rgba(255, 107, 107, 0.1);
+        }
+
+        .favorites-nav-btn:hover {
+            box-shadow: 0 4px 8px rgba(255, 107, 107, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .favorites-nav-btn .favorites-icon {
+            font-size: 1rem;
+        }
+
+        .favorites-nav-btn .favorites-text {
+            font-size: 0.8rem;
+        }
+
+        .favorites-count-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            min-width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: bold;
+            padding: 0 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .tool-btn {
+            background: none;
+            border: none;
+            padding: 0.45rem 0.9rem;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-weight: 500;
+            color: #2a5298;
+            box-shadow: 0 2px 4px rgba(42, 82, 152, 0.1);
+        }
+
+        .tool-btn:active {
+            transform: scale(0.96);
+        }
+
+        .tool-btn:hover {
+            background: rgba(42, 82, 152, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .menu-toggle:hover {
+            background: #f1f5f9;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            padding: 0.8rem 0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .nav-links::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #2a5298;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 1rem;
+                gap: 0;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+
+            .nav-links.show {
+                display: flex;
+            }
+
+            .nav-links a {
+                padding: 0.8rem;
+                border-bottom: 1px solid #f1f5f9;
+            }
+
+            .nav-links a:last-child {
+                border-bottom: none;
+            }
+        }
+
+        /* 搜索栏浮动图标 */
+        .search-float-icon {
+            position: fixed;
+            top: 70px;
+            right: 1rem;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            border: none;
+            z-index: 99;
+            font-size: 1.4rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.8) translateY(-20px);
+        }
+
+        .search-float-icon.show {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1) translateY(0);
+        }
+
+        .search-float-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+        }
+
+        .search-float-icon:active {
+            transform: scale(0.95);
+        }
+
+        .search-section.hidden {
+            display: none;
+        }
+
+        .hot-searches {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 0.8rem;
+        }
+
+        .hot-tag {
+            padding: 0.25rem 0.8rem;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            font-size: 0.75rem;
+            color: #4a5568;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        /* 筛选标签 */
+        .filter-section {
+            background: white;
+            border-bottom: 1px solid #eef2f7;
+            padding: 0.8rem 1rem;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .filter-section::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-tags {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: nowrap;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .filter-tag {
+            padding: 0.35rem 1rem;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+            color: #4a5568;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .filter-tag.active {
+            background: #2a5298;
+            color: white;
+            border-color: #2a5298;
+        }
+
+        /* 主内容容器 */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 1.5rem 1rem;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 主页面背景 */
+        .page-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 1rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            min-height: calc(100vh - 200px);
+        }
+
+        /* 搜索框 */
+        .search-container {
+            max-width: 800px;
+            margin: 0 auto 1.5rem;
+            position: relative;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            padding: 0.8rem 1rem;
+            position: relative;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .search-box:focus-within {
+            border-color: #667eea;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .search-icon {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            margin-right: 0.8rem;
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            color: #1e293b;
+            background: transparent;
+            transition: all 0.3s;
+        }
+
+        .search-input::placeholder {
+            color: #94a3b8;
+            transition: opacity 0.3s;
+        }
+
+        .search-input:focus::placeholder {
+            opacity: 0.5;
+        }
+
+        .search-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .clear-button {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #cbd5e1;
+            transition: color 0.2s;
+        }
+
+        .clear-button:hover {
+            color: #64748b;
+        }
+
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            margin-top: 0.5rem;
+            z-index: 10;
+            display: none;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .search-suggestions.show {
+            display: block;
+        }
+
+        .search-suggestions li {
+            list-style: none;
+            padding: 0.8rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            transition: background 0.2s;
+        }
+
+        .search-suggestions li:hover {
+            background: #f8fafc;
+        }
+
+        .suggestion-text {
+            flex: 1;
+            font-size: 0.9rem;
+            color: #334155;
+        }
+
+        .suggestion-meta {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        /* 景点卡片网格 */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .grid.list-view {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            height: 320px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 16px 48px rgba(102, 126, 234, 0.2);
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .card-panorama {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 2;
+        }
+
+        .card.panorama-down .card-panorama {
+            transform: translateY(-100%);
+        }
+
+        .card-panorama img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-info {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            z-index: 1;
+        }
+
+        .card.panorama-down .card-info {
+            transform: translateY(-100%);
+        }
+
+        .card-indicator {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .card:hover .card-indicator {
+            opacity: 1;
+        }
+
+        .card-indicator-top {
+            top: 10px;
+            bottom: auto;
+        }
+
+        .card.panorama-down .card-indicator-top {
+            opacity: 1;
+        }
+
+        .card.panorama-down .card-indicator-bottom {
+            opacity: 1;
+        }
+
+        .card-content {
+            padding: 1.2rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-info-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.8rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card-info-desc {
+            font-size: 0.9rem;
+            color: #64748b;
+            line-height: 1.7;
+            margin-bottom: 1rem;
+            flex: 1;
+        }
+
+        .card-info-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .card-info-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 0.8rem;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .card-info-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        .card-info-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-desc {
+            color: #64748b;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 0.8rem;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .tag {
+            padding: 0.25rem 0.6rem;
+            background: #f0f9ff;
+            color: #0891b2;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .card-footer {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 0.8rem;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .card-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        .card-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        .favorite-btn {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            padding: 0.3rem;
+        }
+
+        .favorite-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .grid.list-view .card {
+            height: 160px;
+        }
+
+        .grid.list-view .card-inner {
+            flex-direction: row;
+        }
+
+        .grid.list-view .card-front {
+            flex-direction: row;
+        }
+
+        .grid.list-view .card-img {
+            width: 200px;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .grid.list-view .card-content {
+            flex: 1;
+            padding: 1rem;
+            min-width: 0;
+        }
+
+        .grid.list-view .card-title {
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .grid.list-view .card-desc {
+            font-size: 0.8rem;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+        }
+
+        .grid.list-view .card-footer {
+            display: none;
+        }
+
+        .grid.list-view .card-title {
+            font-size: 0.85rem;
+        }
+
+        /* 分页 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .pagination button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            color: #64748b;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            border-color: #2a5298;
+            color: #2a5298;
+        }
+
+        .pagination button.active {
+            background: #2a5298;
+            color: white;
+            border-color: #2a5298;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 模态框 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            perspective: 1000px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #64748b;
+            transition: color 0.2s;
+            z-index: 10;
+        }
+
+        .modal-close:hover {
+            color: #e53e3e;
+        }
+
+        .modal-img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .modal-quick-info {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .modal-quick-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.8rem;
+        }
+
+        .modal-quick-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+
+        .modal-desc {
+            color: #4a5568;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        /* 返回顶部按钮 */
+        #backToTop {
+            position: fixed;
+            bottom: 2rem;
+            right: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        #backToTop.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #backToTop:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        /* 页面切换 */
+        .page-container {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page-container.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 标题样式 */
+        .page-container h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #1e293b;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-img {
+                height: 250px;
+            }
+
+            .modal-img {
+                height: 200px;
+            }
+
+            .modal-content {
+                max-width: 100%;
+                border-radius: 12px;
+            }
+        }
+
+        /* 摄影推荐页面样式 */
+        .photo-category {
+            padding: 0.5rem 1rem;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .photo-category.active {
+            background: #2a5298;
+            color: white;
+            border-color: #2a5298;
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .photo-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: all 0.3s;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            height: 320px;
+        }
+
+        .photo-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        .photo-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .photo-card-panorama {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 2;
+        }
+
+        .photo-card.panorama-down .photo-card-panorama {
+            transform: translateY(-100%);
+        }
+
+        .photo-card-panorama img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-card-info {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            z-index: 1;
+        }
+
+        .photo-card.panorama-down .photo-card-info {
+            transform: translateY(-100%);
+        }
+
+        .photo-card-img-container {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+
+        .photo-card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .photo-card:hover .photo-card-panorama .photo-card-img {
+            transform: scale(1.05);
+        }
+
+        .photo-favorite-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: all 0.2s;
+            font-size: 1.1rem;
+            z-index: 10;
+        }
+
+        .photo-favorite-btn.active {
+            color: #ff4757;
+        }
+
+        .photo-card-content {
+            padding: 1.2rem;
+        }
+
+        .photo-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .photo-card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .photo-card-rating {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        .photo-card-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+        }
+
+        .photo-card-desc {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 0.8rem;
+        }
+
+        .photo-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .photo-card-info-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.8rem;
+        }
+
+        .photo-card-info-desc {
+            font-size: 0.9rem;
+            color: #64748b;
+            line-height: 1.7;
+            margin-bottom: 1rem;
+            flex: 1;
+        }
+
+        .photo-card-info-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 0.8rem;
+        }
+
+        .photo-card-info-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 0.8rem;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .photo-card-info-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        .photo-card-info-details {
+            background: #f8fafc;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-top: 0.8rem;
+        }
+
+        .photo-card-info-detail {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 0.4rem;
+            line-height: 1.5;
+        }
+
+        .photo-tag {
+            padding: 0.2rem 0.6rem;
+            background: #f0f9ff;
+            color: #0891b2;
+            border-radius: 6px;
+            font-size: 0.75rem;
+        }
+
+        /* 搜索统计 */
+        .search-stats {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        /* 排序控件 */
+        .sort-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .sort-control label {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .sort-control select {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: white;
+            cursor: pointer;
+        }
+
+        /* 视图切换 */
+        .view-control {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .view-btn {
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            color: #64748b;
+        }
+
+        .view-btn.active {
+            background: #2a5298;
+            color: white;
+            border-color: #2a5298;
+        }
+
+        .explore-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .explore-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .explore-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .explore-btn:active::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        @media (max-width: 480px) {
+            .grid,
+            .photo-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-title,
+            .photo-card-title {
+                font-size: 0.9rem;
+            }
+
+            .grid.list-view .card-title {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* AI 助手浮动按钮 */
+        .ai-assistant-btn {
+            position: fixed;
+            bottom: 4.5rem;
+            right: 1rem;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 4px 16px rgba(102, 126, 234, 0.5); }
+            50% { box-shadow: 0 4px 24px rgba(102, 126, 234, 0.7); }
+        }
+
+        .ai-assistant-btn:hover {
+            transform: scale(1.1) rotate(10deg);
+        }
+
+        .ai-assistant-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* AI 聊天面板 */
+        .ai-chat-panel {
+            position: fixed;
+            bottom: 5.5rem;
+            right: 1.5rem;
+            width: 380px;
+            max-height: 600px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .ai-chat-panel.show {
+            display: flex;
+        }
+
+        .ai-chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-chat-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ai-chat-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .ai-chat-controls button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem 0.8rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .ai-chat-controls button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .ai-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.2rem;
+            background: #f8fafc;
+            min-height: 300px;
+            max-height: 400px;
+        }
+
+        .chat-message {
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 0.8rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chat-message.user {
+            flex-direction: row-reverse;
+        }
+
+        .chat-message.user .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 18px 18px 4px 18px;
+        }
+
+        .chat-message.ai .message-bubble {
+            background: white;
+            color: #1e293b;
+            border-radius: 18px 18px 18px 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .message-bubble {
+            padding: 0.9rem 1.2rem;
+            max-width: 70%;
+            word-wrap: break-word;
+            line-height: 1.6;
+            font-size: 0.9rem;
+        }
+
+        .message-bubble pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 0.8rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .message-bubble code {
+            background: #f1f5f9;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+
+        .chat-message.user .message-bubble code {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .ai-chat-input {
+            padding: 1rem;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .ai-chat-input input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            outline: none;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+
+        .ai-chat-input input:focus {
+            border-color: #667eea;
+        }
+
+        .ai-chat-input button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 0.8rem 1.2rem;
+            border-radius: 24px;
+            color: white;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .ai-chat-input button:hover {
+            transform: scale(1.05);
+        }
+
+        .ai-chat-input button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 0.5rem;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: #94a3b8;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        /* AI 设置模态框 */
+        .ai-settings-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 1rem;
+        }
+
+        .ai-settings-modal.show {
+            display: flex;
+        }
+
+        .ai-settings-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .ai-settings-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-settings-header h2 {
+            margin: 0;
+            font-size: 1.3rem;
+            color: #1e293b;
+        }
+
+        .ai-settings-close {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #64748b;
+            transition: color 0.2s;
+        }
+
+        .ai-settings-close:hover {
+            color: #e53e3e;
+        }
+
+        .ai-settings-body {
+            padding: 1.5rem;
+        }
+
+        .ai-provider-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .ai-provider-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .ai-provider-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .api-key-input-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .api-key-input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            outline: none;
+            font-size: 0.9rem;
+            font-family: monospace;
+        }
+
+        .api-key-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .api-key-toggle {
+            padding: 0.8rem;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .api-key-toggle:hover {
+            background: #e2e8f0;
+        }
+
+        .ai-provider-select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            outline: none;
+            font-size: 0.9rem;
+            background: white;
+            cursor: pointer;
+        }
+
+        .ai-provider-select:focus {
+            border-color: #667eea;
+        }
+
+        .ai-save-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 1rem;
+        }
+
+        .ai-save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .ai-model-info {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 0.5rem;
+        }
+
+        /* 响应式 AI 面板 */
+        @media (max-width: 480px) {
+            .ai-chat-panel {
+                width: calc(100% - 2rem);
+                right: 1rem;
+                bottom: 4rem;
+                max-height: 70vh;
+            }
+
+            .ai-chat-messages {
+                max-height: 50vh;
+            }
+        }
+
+        /* 快捷问题 */
+        .quick-questions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 0.8rem 1.2rem;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .quick-question-btn {
+            padding: 0.5rem 0.8rem;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .quick-question-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        /* AI 提供商状态 */
+        .provider-status {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-left: 0.5rem;
+        }
+
+        .provider-status.active {
+            background: #22c55e;
+        }
+
+        .provider-status.inactive {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+    <!-- 加载动画 -->
+    <div class="loader-wrapper" id="loader">
+        <div class="loader"></div>
+    </div>
+
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-top">
+                <div class="logo" onclick="showHome()">
+                    <span class="logo-icon">🇲🇴</span>
+                    <div class="logo-text">
+                        <span class="logo-main">澳门风景印象</span>
+                        <span class="logo-sub">Macau Scenery</span>
+                    </div>
+                </div>
+                
+                <div class="nav-tools">
+                    <div class="favorites-nav-btn" onclick="showFavoritesPage()">
+                        <span class="favorites-icon">❤️</span>
+                        <span class="favorites-text">收藏</span>
+                        <span class="favorites-count-badge" id="navFavoritesCount">0</span>
+                    </div>
+                    <button class="tool-btn" onclick="scrollToTop()">
+                        <span>⬆️</span>
+                        <span class="tool-text">顶部</span>
+                    </button>
+                    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+                </div>
+            </div>
+            
+            <div class="nav-links" id="navLinks">
+                <a onclick="showHome()" class="active">首页</a>
+                <a onclick="showFavoritesPage()">我的收藏</a>
+                <a onclick="showPopularPage()">热门景点</a>
+                <a onclick="showHiddenGemsPage()">小众秘境</a>
+                <a onclick="showPhotographyPage()">摄影推荐</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 首页内容 -->
+    <div id="homePage" class="page-container active">
+        <div class="search-section">
+            <div class="search-container">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" id="searchInput" placeholder="搜索景点..." autocomplete="off">
+                    <button class="clear-button" onclick="clearSearch()">✕</button>
+                </div>
+                <div class="search-suggestions" id="searchSuggestions">
+                    <ul id="suggestionsList"></ul>
+                </div>
+            </div>
+            <div class="hot-searches">
+                <span class="hot-tag" onclick="quickSearch('大三巴')">大三巴牌坊</span>
+                <span class="hot-tag" onclick="quickSearch('塔')">澳门塔</span>
+                <span class="hot-tag" onclick="quickSearch('路环')">路环渔村</span>
+                <span class="hot-tag" onclick="quickSearch('博物馆')">博物馆</span>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-tags">
+                <span class="filter-tag active" onclick="filterByTag('all')">全部</span>
+                <span class="filter-tag" onclick="filterByTag('世界遗产')">世界遗产</span>
+                <span class="filter-tag" onclick="filterByTag('自然风光')">自然风光</span>
+                <span class="filter-tag" onclick="filterByTag('文化景点')">文化景点</span>
+                <span class="filter-tag" onclick="filterByTag('娱乐休闲')">娱乐休闲</span>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="sort-control">
+                <label>排序:</label>
+                <select id="sortSelect" onchange="sortSites()">
+                    <option value="default">默认</option>
+                    <option value="name">名称</option>
+                    <option value="rating">评分</option>
+                    <option value="popular">热门度</option>
+                </select>
+            </div>
+
+            <div class="view-control">
+                <button class="view-btn active" onclick="changeView('grid')">网格</button>
+                <button class="view-btn" onclick="changeView('list')">列表</button>
+            </div>
+
+            <div class="search-stats" id="searchStats"></div>
+            <div class="grid" id="sitesGrid"></div>
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </div>
+
+    <!-- 收藏页面 -->
+    <div id="favoritesPage" class="page-container">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 1.5rem; color: #1e293b;">我的收藏</h2>
+            <div class="grid" id="favoritesGrid"></div>
+        </div>
+    </div>
+
+    <!-- 热门景点页面 -->
+    <div id="popularPage" class="page-container">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 1.5rem; color: #1e293b;">🔥 热门景点</h2>
+            <div class="grid" id="popularGrid"></div>
+        </div>
+    </div>
+
+    <!-- 小众秘境页面 -->
+    <div id="hiddenGemsPage" class="page-container">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 1.5rem; color: #1e293b;">✨ 小众秘境</h2>
+            <div class="grid" id="hiddenGemsGrid"></div>
+        </div>
+    </div>
+
+    <!-- 摄影推荐页面 -->
+    <div id="photographyPage" class="page-container">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 1.5rem; color: #1e293b;">📸 摄影推荐</h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 1.5rem;">
+                <span class="photo-category active" onclick="filterPhotos('all')">全部</span>
+                <span class="photo-category" onclick="filterPhotos('sunset')">日落</span>
+                <span class="photo-category" onclick="filterPhotos('night')">夜景</span>
+                <span class="photo-category" onclick="filterPhotos('architecture')">建筑</span>
+                <span class="photo-category" onclick="filterPhotos('street')">街拍</span>
+                <span class="photo-category" onclick="filterPhotos('landscape')">风光</span>
+            </div>
+            <div style="text-align: center; margin-bottom: 1rem;">
+                <button class="explore-btn" onclick="showPhotoFavorites()">我的摄影收藏</button>
+            </div>
+            <div class="photo-grid" id="photoGrid"></div>
+        </div>
+    </div>
+
+    <!-- 搜索栏浮动图标 -->
+    <button class="search-float-icon" id="searchFloatIcon" onclick="toggleSearch()">🔍</button>
+
+    <!-- AI 助手按钮 -->
+    <button class="ai-assistant-btn" id="aiAssistantBtn" onclick="toggleAIChat()" title="AI 助手">🤖</button>
+
+    <!-- AI 聊天面板 -->
+    <div class="ai-chat-panel" id="aiChatPanel">
+        <div class="ai-chat-header">
+            <div class="ai-chat-title">
+                <span>🤖</span>
+                <span>AI 智能助手</span>
+                <span class="provider-status" id="providerStatus"></span>
+            </div>
+            <div class="ai-chat-controls">
+                <button onclick="clearChatHistory()">清空</button>
+                <button onclick="openAISettings()">设置</button>
+                <button onclick="toggleAIChat()">✕</button>
+            </div>
+        </div>
+        <div class="quick-questions">
+            <button class="quick-question-btn" onclick="askQuestion('推荐澳门必去景点')">推荐必去景点</button>
+            <button class="quick-question-btn" onclick="askQuestion('澳门旅游最佳路线')">最佳路线</button>
+            <button class="quick-question-btn" onclick="askQuestion('澳门美食推荐')">美食推荐</button>
+            <button class="quick-question-btn" onclick="askQuestion('澳门摄影攻略')">摄影攻略</button>
+        </div>
+        <div class="ai-chat-messages" id="aiChatMessages">
+            <div class="chat-message ai">
+                <div class="message-avatar">🤖</div>
+                <div class="message-bubble">
+                    你好！我是你的澳门旅游AI助手。我可以为你推荐景点、规划路线、提供美食建议等。有什么可以帮助你的吗？
+                </div>
+            </div>
+        </div>
+        <div class="ai-chat-input">
+            <input type="text" id="aiInput" placeholder="输入你的问题..." onkeypress="if(event.key === 'Enter') sendAIMessage()">
+            <button id="aiSendBtn" onclick="sendAIMessage()">发送</button>
+        </div>
+    </div>
+
+    <!-- AI 设置模态框 -->
+    <div class="ai-settings-modal" id="aiSettingsModal">
+        <div class="ai-settings-content">
+            <div class="ai-settings-header">
+                <h2>⚙️ AI 设置</h2>
+                <button class="ai-settings-close" onclick="closeAISettings()">✕</button>
+            </div>
+            <div class="ai-settings-body">
+                <div class="ai-provider-section">
+                    <div class="ai-provider-title">🎯 选择 AI 提供商</div>
+                    <select class="ai-provider-select" id="aiProvider">
+                        <option value="openai">OpenAI (GPT-4/GPT-3.5)</option>
+                        <option value="anthropic">Anthropic (Claude)</option>
+                        <option value="local">本地模式</option>
+                    </select>
+                    <div class="ai-model-info">本地模式无需 API 密钥，基于预设规则回答</div>
+                </div>
+                
+                <div class="ai-provider-section" id="apiKeySection">
+                    <div class="ai-provider-title">🔑 API 密钥</div>
+                    <div class="api-key-input-group">
+                        <input type="password" class="api-key-input" id="apiKeyInput" placeholder="输入你的 API 密钥">
+                        <button class="api-key-toggle" onclick="toggleApiKeyVisibility()">👁️</button>
+                    </div>
+                    <div class="ai-model-info">密钥将安全保存在本地浏览器中</div>
+                </div>
+                
+                <div class="ai-provider-section">
+                    <div class="ai-provider-title">🧠 选择模型</div>
+                    <select class="ai-provider-select" id="aiModel">
+                        <option value="gpt-4">GPT-4</option>
+                        <option value="gpt-3.5-turbo" selected>GPT-3.5 Turbo</option>
+                        <option value="claude-3-opus">Claude 3 Opus</option>
+                        <option value="claude-3-sonnet">Claude 3 Sonnet</option>
+                    </select>
+                </div>
+                
+                <button class="ai-save-btn" onclick="saveAISettings()">保存设置</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 消息 -->
+    <div class="toast-message" id="toast"></div>
+
+    <div class="modal" id="detailModal">
+        <div class="modal-content" id="modalContent" onclick="flipModal()">
+            <div class="modal-front">
+                <span class="modal-close" onclick="event.stopPropagation(); closeModal()">&times;</span>
+                <img src="" alt="景点详情" class="modal-img" id="modalImg">
+                <div class="modal-quick-info">
+                    <h2 class="modal-quick-title" id="modalQuickTitle"></h2>
+                    <div class="modal-quick-tags" id="modalQuickTags"></div>
+                </div>
+            </div>
+            <div class="modal-back">
+                <div class="modal-body">
+                    <h2 class="modal-title" id="modalTitle"></h2>
+                    <p class="modal-desc" id="modalDesc"></p>
+                    <div class="modal-tags" id="modalTags"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button id="backToTop" onclick="scrollToTop()">↑</button>
+
+    <script>
+        // 景点数据
+        const sites = [
+            {
+                id: 1,
+                name: '大三巴牌坊',
+                nameEn: 'Ruins of St. Paul\'s',
+                desc: '澳门最具代表性的地标建筑,是世界文化遗产。这座哥特式教堂的前壁保存完好,见证了澳门400多年的历史变迁。',
+                location: '澳门半岛',
+                tags: ['世界遗产', '文化景点'],
+                rating: 4.9,
+                visits: '128万',
+                bestTime: '8:00-18:00',
+                image: 'https://source.unsplash.com/400x300/?church,ruins'
+            },
+            {
+                id: 2,
+                name: '澳门旅游塔',
+                nameEn: 'Macau Tower',
+                desc: '南中国海畔的标志性建筑,高338米,从塔顶可俯瞰整个澳门半岛和珠海市区的壮丽景色。',
+                location: '澳门半岛',
+                tags: ['娱乐休闲', '观景'],
+                rating: 4.7,
+                visits: '95万',
+                bestTime: '11:00-21:00',
+                image: 'https://source.unsplash.com/400x300/?tower,view'
+            },
+            {
+                id: 3,
+                name: '龙环葡韵',
+                nameEn: 'Taipa Houses-Museum',
+                desc: '氹仔海边的薄荷绿色葡式建筑群,共五栋房屋,展现了20世纪初澳门的葡萄牙民居风格。',
+                location: '氹仔',
+                tags: ['世界遗产', '文化景点'],
+                rating: 4.8,
+                visits: '62万',
+                bestTime: '9:00-17:00',
+                image: 'https://source.unsplash.com/400x300/?portuguese,architecture'
+            },
+            {
+                id: 4,
+                name: '路环渔村',
+                nameEn: 'Coloane Village',
+                desc: '澳门最宁静的地方之一,彩色的小屋、古老的码头和传统的海鲜餐厅,让人仿佛置身于时光隧道。',
+                location: '路环岛',
+                tags: ['自然风光', '文化景点'],
+                rating: 4.9,
+                visits: '45万',
+                bestTime: '10:00-17:00',
+                image: 'https://source.unsplash.com/400x300/?village,coastal'
+            },
+            {
+                id: 5,
+                name: '黑沙滩',
+                nameEn: 'Hac Sa Beach',
+                desc: '澳门最独特的海滩,沙子呈黑色,是天然火山熔岩冷却形成的。海滩边有各种水上运动设施。',
+                location: '路环岛',
+                tags: ['自然风光', '娱乐休闲'],
+                rating: 4.6,
+                visits: '38万',
+                bestTime: '6:00-19:00',
+                image: 'https://source.unsplash.com/400x300/?beach,black'
+            },
+            {
+                id: 6,
+                name: '议事亭前地',
+                nameEn: 'Senado Square',
+                desc: '澳门市中心的核心区域,周围有市政厅大楼、仁慈堂大楼等葡式建筑,地面铺设着黑白相间的波浪形碎石。',
+                location: '澳门半岛',
+                tags: ['世界遗产', '文化景点'],
+                rating: 4.8,
+                visits: '86万',
+                bestTime: '8:00-22:00',
+                image: 'https://source.unsplash.com/400x300/?square,architecture'
+            },
+            {
+                id: 7,
+                name: '澳门博物馆',
+                nameEn: 'Macau Museum',
+                desc: '展示了澳门400多年来的历史文化变迁,馆藏丰富,包括书画、陶瓷、钱币等珍贵文物。',
+                location: '澳门半岛',
+                tags: ['文化景点', '世界遗产'],
+                rating: 4.5,
+                visits: '28万',
+                bestTime: '10:00-18:00',
+                image: 'https://source.unsplash.com/400x300/?museum'
+            },
+            {
+                id: 8,
+                name: '主教山小堂',
+                nameEn: 'Penha Church',
+                desc: '位于澳门半岛西南部的主教山上,这座小教堂建于1622年,是欣赏澳门日落和夜景的绝佳地点。',
+                location: '澳门半岛',
+                tags: ['文化景点', '观景'],
+                rating: 4.7,
+                visits: '32万',
+                bestTime: '6:00-20:00',
+                image: 'https://source.unsplash.com/400x300/?church,hill'
+            }
+        ];
+
+        // 摄影推荐数据
+        const photoSites = [
+            { id: 101, name: '主教山日落', category: 'sunset', desc: '黄昏时分,主教山小堂是拍摄澳门日落的绝佳位置。', bestTime: '17:00-19:00', equipment: '三脚架、广角镜头', tips: '提前30分钟到达', image: 'https://source.unsplash.com/400x300/?sunset,church', tags: ['日落', '观景'], location: '澳门半岛' },
+            { id: 102, name: '南湾夜景', category: 'night', desc: '南湾湖畔的夜晚灯火璀璨,西湾大桥的倒影与城市灯光交相辉映。', bestTime: '19:00-22:00', equipment: '三脚架、长焦镜头', tips: '使用慢门拍摄车流', image: 'https://source.unsplash.com/400x300/?night,city', tags: ['夜景', '城市'], location: '澳门半岛' },
+            { id: 103, name: '大三巴光影', category: 'architecture', desc: '清晨或黄昏时分,光线透过大三巴牌坊,营造出戏剧性的光影效果。', bestTime: '6:00-8:00 / 17:00-19:00', equipment: '广角镜头', tips: '避免正午顶光', image: 'https://source.unsplash.com/400x300/?architecture,ruins', tags: ['建筑', '世界遗产'], location: '澳门半岛' },
+            { id: 104, name: '路环街拍', category: 'street', desc: '路环渔村的彩色小屋和宁静街巷,是拍摄澳门人文风情的绝佳场所。', bestTime: '10:00-16:00', equipment: '35mm/50mm定焦', tips: '保持安静', image: 'https://source.unsplash.com/400x300/?street,village', tags: ['街拍', '人文'], location: '路环岛' },
+            { id: 105, name: '黑沙滩海景', category: 'landscape', desc: '独特的黑色沙滩与蓝色海水形成鲜明对比,是风景摄影的理想地点。', bestTime: '15:00-18:00', equipment: '广角镜头', tips: '低角度拍摄', image: 'https://source.unsplash.com/400x300/?beach,black', tags: ['风景', '自然'], location: '路环岛' }
+        ];
+
+        let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        let photoFavorites = JSON.parse(localStorage.getItem('photoFavorites') || '[]');
+        let currentFilter = 'all';
+        let currentPage = 1;
+        const itemsPerPage = 9;
+        let currentView = 'grid';
+        let currentSort = 'default';
+
+        // AI 相关配置
+        let aiConfig = JSON.parse(localStorage.getItem('aiConfig') || '{"provider":"local","apiKey":"","model":"gpt-3.5-turbo"}');
+        let chatHistory = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+        let isChatVisible = false;
+
+        // 显示首页
+        function showHome() {
+            document.querySelectorAll('.page-container').forEach(page => page.classList.remove('active'));
+            document.getElementById('homePage').classList.add('active');
+            document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active'));
+            event?.target?.classList?.add('active');
+            renderSites();
+        }
+
+        // 显示收藏页面
+        function showFavoritesPage() {
+            document.querySelectorAll('.page-container').forEach(page => page.classList.remove('active'));
+            document.getElementById('favoritesPage').classList.add('active');
+            document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active'));
+            renderFavorites();
+        }
+
+        // 显示热门景点
+        function showPopularPage() {
+            document.querySelectorAll('.page-container').forEach(page => page.classList.remove('active'));
+            document.getElementById('popularPage').classList.add('active');
+            document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active'));
+            renderPopular();
+        }
+
+        // 显示小众秘境
+        function showHiddenGemsPage() {
+            document.querySelectorAll('.page-container').forEach(page => page.classList.remove('active'));
+            document.getElementById('hiddenGemsPage').classList.add('active');
+            document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active'));
+            renderHiddenGems();
+        }
+
+        // 显示摄影推荐
+        function showPhotographyPage() {
+            document.querySelectorAll('.page-container').forEach(page => page.classList.remove('active'));
+            document.getElementById('photographyPage').classList.add('active');
+            document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active'));
+            renderPhotography();
+        }
+
+        // 渲染景点列表
+        function renderSites(filtered = null) {
+            let data = filtered || sites;
+            if (currentFilter !== 'all') data = data.filter(s => s.tags.includes(currentFilter));
+            if (currentSort === 'name') data.sort((a, b) => a.name.localeCompare(b.name));
+            else if (currentSort === 'rating') data.sort((a, b) => b.rating - a.rating);
+            else if (currentSort === 'popular') data.sort((a, b) => parseInt(b.visits) - parseInt(a.visits));
+
+            const totalPages = Math.ceil(data.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageData = data.slice(startIndex, endIndex);
+
+            const grid = document.getElementById('sitesGrid');
+            grid.innerHTML = pageData.map(site => `
+                <div class="card" data-id="${site.id}" onclick="handleCardClick(event, ${site.id})">
+                    <div class="card-inner">
+                        <div class="card-panorama">
+                            <img src="${site.image}" alt="${site.name}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'400\' height=\'300\' fill=\'%232a5298\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' font-size=\'18\' fill=\'%23fff\' text-anchor=\'middle\'%3E${site.name}%3C/text%3E%3C/svg%3E';">
+                            <div class="card-indicator card-indicator-top">⬇️ 滑动查看详情</div>
+                            <button class="favorite-btn ${favorites.includes(site.id) ? 'active' : ''}" onclick="toggleFavorite(${site.id}, event)" style="position:absolute;top:10px;right:10px;z-index:5;">${favorites.includes(site.id) ? '❤️' : '🤍'}</button>
+                        </div>
+                        <div class="card-info">
+                            <div class="card-info-title">${site.name}</div>
+                            <div class="card-info-desc">${site.desc}</div>
+                            <div class="card-info-tags">
+                                ${site.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                            </div>
+                            <div class="card-info-footer">
+                                <div class="card-info-meta">
+                                    <span>📍 ${site.location}</span>
+                                    <span>⏰ ${site.bestTime}</span>
+                                    <span>👥 ${site.visits}</span>
+                                </div>
+                                <div class="card-info-rating">
+                                    <span>⭐ ${site.rating}</span>
+                                </div>
+                            </div>
+                            <div class="card-indicator card-indicator-bottom">⬆️ 返回图片</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            renderPagination(totalPages);
+        }
+
+        // 渲染收藏
+        function renderFavorites() {
+            const favoriteSites = sites.filter(site => favorites.includes(site.id));
+            const grid = document.getElementById('favoritesGrid');
+
+            if (favoriteSites.length === 0) {
+                grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem;"><div style="font-size:4rem;margin-bottom:1rem;">💔</div><h3 style="color:#1e293b;margin-bottom:0.5rem;">暂无收藏</h3><p style="color:#64748b;margin-bottom:1.5rem;">您还没有收藏任何景点,快去发现澳门的美景吧!</p><button class="explore-btn" onclick="showHome()">去探索</button></div>`;
+                return;
+            }
+
+            grid.innerHTML = favoriteSites.map(site => `
+                <div class="card" data-id="${site.id}" onclick="handleCardClick(event, ${site.id})">
+                    <div class="card-inner">
+                        <div class="card-panorama">
+                            <img src="${site.image}" alt="${site.name}" loading="lazy">
+                            <div class="card-indicator card-indicator-top">⬇️ 滑动查看详情</div>
+                            <button class="favorite-btn active" onclick="toggleFavorite(${site.id}, event)" style="position:absolute;top:10px;right:10px;z-index:5;">❤️</button>
+                        </div>
+                        <div class="card-info">
+                            <div class="card-info-title">${site.name}</div>
+                            <div class="card-info-desc">${site.desc}</div>
+                            <div class="card-info-tags">
+                                ${site.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                            </div>
+                            <div class="card-info-footer">
+                                <div class="card-info-meta">
+                                    <span>📍 ${site.location}</span>
+                                    <span>⏰ ${site.bestTime}</span>
+                                    <span>👥 ${site.visits}</span>
+                                </div>
+                                <div class="card-info-rating">
+                                    <span>⭐ ${site.rating}</span>
+                                </div>
+                            </div>
+                            <div class="card-indicator card-indicator-bottom">⬆️ 返回图片</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 渲染热门景点
+        function renderPopular() {
+            const popularSites = [...sites].sort((a, b) => parseInt(b.visits) - parseInt(a.visits)).slice(0, 6);
+            document.getElementById('popularGrid').innerHTML = popularSites.map(site => `
+                <div class="card" data-id="${site.id}" onclick="handleCardClick(event, ${site.id})">
+                    <div class="card-inner">
+                        <div class="card-panorama">
+                            <img src="${site.image}" alt="${site.name}" loading="lazy">
+                            <div class="card-indicator card-indicator-top">⬇️ 滑动查看详情</div>
+                            <button class="favorite-btn ${favorites.includes(site.id) ? 'active' : ''}" onclick="toggleFavorite(${site.id}, event)" style="position:absolute;top:10px;right:10px;z-index:5;">${favorites.includes(site.id) ? '❤️' : '🤍'}</button>
+                        </div>
+                        <div class="card-info">
+                            <div class="card-info-title">${site.name}</div>
+                            <div class="card-info-desc">${site.desc}</div>
+                            <div class="card-info-tags">
+                                ${site.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                            </div>
+                            <div class="card-info-footer">
+                                <div class="card-info-meta">
+                                    <span>📍 ${site.location}</span>
+                                    <span>👥 ${site.visits}次</span>
+                                </div>
+                                <div class="card-info-rating">
+                                    <span>⭐ ${site.rating}</span>
+                                </div>
+                            </div>
+                            <div class="card-indicator card-indicator-bottom">⬆️ 返回图片</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 渲染小众秘境
+        function renderHiddenGems() {
+            const hiddenGems = sites.filter(site => site.tags.includes('自然风光') && site.tags.includes('文化景点'));
+            document.getElementById('hiddenGemsGrid').innerHTML = hiddenGems.map(site => `
+                <div class="card" data-id="${site.id}" onclick="handleCardClick(event, ${site.id})">
+                    <div class="card-inner">
+                        <div class="card-panorama">
+                            <img src="${site.image}" alt="${site.name}" loading="lazy">
+                            <div class="card-indicator card-indicator-top">⬇️ 滑动查看详情</div>
+                            <button class="favorite-btn ${favorites.includes(site.id) ? 'active' : ''}" onclick="toggleFavorite(${site.id}, event)" style="position:absolute;top:10px;right:10px;z-index:5;">${favorites.includes(site.id) ? '❤️' : '🤍'}</button>
+                        </div>
+                        <div class="card-info">
+                            <div class="card-info-title">${site.name}</div>
+                            <div class="card-info-desc">${site.desc}</div>
+                            <div class="card-info-tags">
+                                ${site.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                            </div>
+                            <div class="card-info-footer">
+                                <div class="card-info-meta">
+                                    <span>📍 ${site.location}</span>
+                                    <span>⏰ ${site.bestTime}</span>
+                                    <span>👥 ${site.visits}</span>
+                                </div>
+                                <div class="card-info-rating">
+                                    <span>⭐ ${site.rating}</span>
+                                </div>
+                            </div>
+                            <div class="card-indicator card-indicator-bottom">⬆️ 返回图片</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 渲染分页
+        function renderPagination(totalPages) {
+            const pagination = document.getElementById('pagination');
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+
+            let html = `<button onclick="goToPage(1)" ${currentPage === 1 ? 'disabled' : ''}>首页</button>`;
+            html += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>上一页</button>`;
+
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    html += `<button onclick="goToPage(${i})" class="${currentPage === i ? 'active' : ''}">${i}</button>`;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    html += `<button disabled>...</button>`;
+                }
+            }
+
+            html += `<button onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>下一页</button>`;
+            html += `<button onclick="goToPage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''}>末页</button>`;
+            pagination.innerHTML = html;
+        }
+
+        // 渲染摄影推荐
+        function renderPhotography() {
+            const container = document.getElementById('photoGrid');
+            container.innerHTML = photoSites.map(site => `
+                <div class="photo-card" data-id="${site.id}" onclick="handlePhotoCardClick(event, ${site.id})">
+                    <div class="photo-card-inner">
+                        <div class="photo-card-panorama">
+                            <div class="photo-card-img-container">
+                                <img class="photo-card-img" src="${site.image}" alt="${site.name}" loading="lazy">
+                                <button class="photo-favorite-btn ${photoFavorites.includes(site.id) ? 'active' : ''}" onclick="togglePhotoFavorite(${site.id}, event)">${photoFavorites.includes(site.id) ? '❤️' : '🤍'}</button>
+                            </div>
+                            <div class="card-indicator card-indicator-top">⬇️ 滑动查看详情</div>
+                        </div>
+                        <div class="photo-card-info">
+                            <div class="photo-card-info-title">${site.name}</div>
+                            <div class="photo-card-info-desc">${site.desc}</div>
+                            <div class="photo-card-info-meta">
+                                <span>⏰ ${site.bestTime}</span>
+                                <span>📍 ${site.location}</span>
+                            </div>
+                            <div class="photo-tags">
+                                ${site.tags.map(tag => `<span class="photo-tag">${tag}</span>`).join('')}
+                            </div>
+                            <div class="photo-card-info-details">
+                                <div class="photo-card-info-detail">📷 推荐器材：${site.equipment}</div>
+                                <div class="photo-card-info-detail">💡 拍摄技巧：${site.tips}</div>
+                            </div>
+                            <div class="photo-card-info-footer">
+                                <div class="photo-card-info-rating">⭐ 4.8</div>
+                            </div>
+                            <div class="card-indicator card-indicator-bottom">⬆️ 返回图片</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 切换收藏状态
+        function toggleFavorite(id, event) {
+            event.stopPropagation();
+            const index = favorites.indexOf(id);
+            if (index === -1) favorites.push(id);
+            else favorites.splice(index, 1);
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            updateNavFavoritesCount();
+            renderSites();
+        }
+
+        // 处理卡片点击
+        function handleCardClick(event, id) {
+            // 如果点击的是收藏按钮，不处理
+            if (event.target.classList.contains('favorite-btn')) {
+                return;
+            }
+
+            const card = event.currentTarget;
+            const cardPanorama = card.querySelector('.card-panorama');
+
+            // 检查卡片状态
+            const isPanoramaDown = card.classList.contains('panorama-down');
+
+            if (isPanoramaDown) {
+                // 如果已经是详情页，打开详情模态框
+                openModal(id);
+            } else {
+                // 第一次点击，滚动到详情
+                card.classList.add('panorama-down');
+            }
+        }
+
+        // 更新导航栏收藏数量
+        function updateNavFavoritesCount() {
+            document.getElementById('navFavoritesCount').textContent = favorites.length;
+        }
+
+        // 打开模态框
+        function openModal(id) {
+            const site = sites.find(s => s.id === id);
+            if (!site) return;
+            document.getElementById('modalImg').src = site.image;
+            document.getElementById('modalQuickTitle').textContent = site.name;
+            document.getElementById('modalQuickTags').innerHTML = site.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+            document.getElementById('modalTitle').textContent = site.name;
+            document.getElementById('modalDesc').textContent = site.desc;
+            document.getElementById('modalTags').innerHTML = site.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+            document.getElementById('detailModal').classList.add('show');
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('show');
+        }
+
+        // 翻转模态框
+        function flipModal() {
+            document.getElementById('modalContent').classList.toggle('flipped');
+        }
+
+        // 切换搜索栏显示
+        function toggleSearch() {
+            const searchSection = document.querySelector('.search-section');
+            const floatIcon = document.querySelector('.search-float-icon');
+            searchSection.classList.toggle('hidden');
+            floatIcon.classList.toggle('show');
+        }
+
+        // 初始化搜索
+        function initSearch() {
+            const input = document.getElementById('searchInput');
+            input.addEventListener('input', function(e) {
+                const value = e.target.value.trim();
+                if (value) showSuggestions(value);
+                else hideSuggestions();
+            });
+            input.addEventListener('keypress', e => { if (e.key === 'Enter') searchSites(); });
+            document.addEventListener('click', e => { if (!e.target.closest('.search-container')) hideSuggestions(); });
+        }
+
+        // 显示搜索建议
+        function showSuggestions(query) {
+            const suggestions = sites.filter(s => s.name.includes(query) || s.desc.includes(query) || s.location.includes(query)).slice(0, 5);
+            const list = document.getElementById('suggestionsList');
+            if (suggestions.length) {
+                list.innerHTML = suggestions.map(s => `<li onclick="selectSuggestion('${s.name}')"><span class="suggestion-text">${s.name}</span><span class="suggestion-meta">${s.location}</span></li>`).join('');
+                document.getElementById('searchSuggestions').classList.add('show');
+            } else {
+                list.innerHTML = '<li style="text-align:center;color:#9aaec2;">未找到相关景点</li>';
+                document.getElementById('searchSuggestions').classList.add('show');
+            }
+        }
+
+        // 隐藏搜索建议
+        function hideSuggestions() {
+            document.getElementById('searchSuggestions').classList.remove('show');
+        }
+
+        // 选择建议
+        function selectSuggestion(name) {
+            document.getElementById('searchInput').value = name;
+            hideSuggestions();
+            searchSites();
+        }
+
+        // 搜索景点
+        function searchSites() {
+            const term = document.getElementById('searchInput').value.toLowerCase().trim();
+            hideSuggestions();
+            if (term) {
+                const filtered = sites.filter(s => s.name.toLowerCase().includes(term) || s.desc.toLowerCase().includes(term) || s.location.toLowerCase().includes(term));
+                document.getElementById('searchStats').textContent = `找到 ${filtered.length} 个结果`;
+                renderSites(filtered);
+            } else {
+                document.getElementById('searchStats').textContent = '';
+                renderSites();
+            }
+        }
+
+        // 快速搜索
+        function quickSearch(term) {
+            document.getElementById('searchInput').value = term;
+            searchSites();
+        }
+
+        // 清除搜索
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            hideSuggestions();
+            renderSites();
+        }
+
+        // 按标签筛选
+        function filterByTag(tag) {
+            currentFilter = tag;
+            currentPage = 1;
+            document.querySelectorAll('.filter-tag').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+            renderSites();
+        }
+
+        // 改变视图
+        function changeView(view) {
+            currentView = view;
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('sitesGrid').classList.toggle('list-view', view === 'list');
+            renderSites();
+        }
+
+        // 排序
+        function sortSites() {
+            currentSort = document.getElementById('sortSelect').value;
+            renderSites();
+        }
+
+        // 跳转页面
+        function goToPage(page) {
+            currentPage = page;
+            renderSites();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 摄影收藏切换
+        function togglePhotoFavorite(id, event) {
+            event.stopPropagation();
+            const index = photoFavorites.indexOf(id);
+            if (index === -1) photoFavorites.push(id);
+            else photoFavorites.splice(index, 1);
+            localStorage.setItem('photoFavorites', JSON.stringify(photoFavorites));
+            renderPhotography();
+        }
+
+        // 处理摄影卡片点击
+        function handlePhotoCardClick(event, id) {
+            if (event.target.classList.contains('photo-favorite-btn')) {
+                return;
+            }
+
+            const card = event.currentTarget;
+            const cardPanorama = card.querySelector('.photo-card-panorama');
+            const isPanoramaDown = card.classList.contains('panorama-down');
+
+            if (isPanoramaDown) {
+                openPhotoModal(id);
+            } else {
+                card.classList.add('panorama-down');
+            }
+        }
+
+        // 显示摄影收藏
+        function showPhotoFavorites() {
+            const favoriteSites = photoSites.filter(s => photoFavorites.includes(s.id));
+            const container = document.getElementById('photoGrid');
+            if (favoriteSites.length === 0) {
+                container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;"><div style="font-size:3rem;margin-bottom:1rem;">📸</div><h3>暂无收藏</h3><p style="color:#718096;">去摄影推荐页面收藏你喜欢的拍摄地点吧!</p></div>`;
+                return;
+            }
+            container.innerHTML = favoriteSites.map(site => `
+                <div class="photo-card" data-id="${site.id}" onclick="handlePhotoCardClick(event, ${site.id})">
+                    <div class="photo-card-inner">
+                        <div class="photo-card-panorama">
+                            <div class="photo-card-img-container">
+                                <img class="photo-card-img" src="${site.image}" alt="${site.name}">
+                                <button class="photo-favorite-btn active" onclick="togglePhotoFavorite(${site.id}, event)">❤️</button>
+                            </div>
+                            <div class="card-indicator card-indicator-top">⬇️ 滑动查看详情</div>
+                        </div>
+                        <div class="photo-card-info">
+                            <div class="photo-card-info-title">${site.name}</div>
+                            <div class="photo-card-info-desc">${site.desc}</div>
+                            <div class="photo-card-info-meta">
+                                <span>⏰ ${site.bestTime}</span>
+                                <span>📍 ${site.location}</span>
+                            </div>
+                            <div class="photo-tags">
+                                ${site.tags.map(tag => `<span class="photo-tag">${tag}</span>`).join('')}
+                            </div>
+                            <div class="photo-card-info-details">
+                                <div class="photo-card-info-detail">📷 推荐器材：${site.equipment}</div>
+                                <div class="photo-card-info-detail">💡 拍摄技巧：${site.tips}</div>
+                            </div>
+                            <div class="photo-card-info-footer">
+                                <div class="photo-card-info-rating">⭐ 4.8</div>
+                            </div>
+                            <div class="card-indicator card-indicator-bottom">⬆️ 返回图片</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 筛选摄影
+        function filterPhotos(category) {
+            document.querySelectorAll('.photo-category').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const container = document.getElementById('photoGrid');
+            let filteredSites = photoSites;
+            if (category !== 'all') {
+                filteredSites = photoSites.filter(s => s.category === category);
+            }
+            container.innerHTML = filteredSites.map(site => `
+                <div class="photo-card" data-id="${site.id}" onclick="handlePhotoCardClick(event, ${site.id})">
+                    <div class="photo-card-inner">
+                        <div class="photo-card-panorama">
+                            <div class="photo-card-img-container">
+                                <img class="photo-card-img" src="${site.image}" alt="${site.name}" loading="lazy">
+                                <button class="photo-favorite-btn ${photoFavorites.includes(site.id) ? 'active' : ''}" onclick="togglePhotoFavorite(${site.id}, event)">${photoFavorites.includes(site.id) ? '❤️' : '🤍'}</button>
+                            </div>
+                            <div class="card-indicator card-indicator-top">⬇️ 滑动查看详情</div>
+                        </div>
+                        <div class="photo-card-info">
+                            <div class="photo-card-info-title">${site.name}</div>
+                            <div class="photo-card-info-desc">${site.desc}</div>
+                            <div class="photo-card-info-meta">
+                                <span>⏰ ${site.bestTime}</span>
+                                <span>📍 ${site.location}</span>
+                            </div>
+                            <div class="photo-tags">
+                                ${site.tags.map(tag => `<span class="photo-tag">${tag}</span>`).join('')}
+                            </div>
+                            <div class="photo-card-info-details">
+                                <div class="photo-card-info-detail">📷 推荐器材：${site.equipment}</div>
+                                <div class="photo-card-info-detail">💡 拍摄技巧：${site.tips}</div>
+                            </div>
+                            <div class="photo-card-info-footer">
+                                <div class="photo-card-info-rating">⭐ 4.8</div>
+                            </div>
+                            <div class="card-indicator card-indicator-bottom">⬆️ 返回图片</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            // 重新初始化滑动功能
+            initCardScroll();
+        }
+
+        // 打开摄影模态框
+        function openPhotoModal(id) {
+            const site = photoSites.find(s => s.id === id);
+            if (!site) return;
+            document.getElementById('modalImg').src = site.image;
+            document.getElementById('modalQuickTitle').textContent = site.name;
+            document.getElementById('modalQuickTags').innerHTML = site.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+            document.getElementById('modalTitle').textContent = site.name;
+            document.getElementById('modalDesc').innerHTML = `
+                <p style="margin-bottom: 0.8rem; color: #4a5568; line-height: 1.8;">${site.desc}</p>
+                <div style="background: #f8fafc; padding: 1rem; border-radius: 12px; margin-top: 1rem;">
+                    <p style="margin-bottom: 0.5rem;"><strong>⏰ 最佳拍摄时间:</strong> ${site.bestTime}</p>
+                    <p style="margin-bottom: 0.5rem;"><strong>📷 推荐器材:</strong> ${site.equipment}</p>
+                    <p><strong>💡 拍摄技巧:</strong> ${site.tips}</p>
+                </div>
+            `;
+            document.getElementById('modalTags').innerHTML = site.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+            document.getElementById('detailModal').classList.add('show');
+        }
+
+        // 滚动到顶部
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 切换菜单
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('show');
+        }
+
+        // 初始化卡片滚动功能
+        function initCardScroll() {
+            const cards = document.querySelectorAll('.card');
+
+            cards.forEach(card => {
+                let isScrolling = false;
+                let startY = 0;
+                let scrollThreshold = 30;
+
+                card.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    const cardPanorama = card.querySelector('.card-panorama');
+                    const isPanoramaDown = card.classList.contains('panorama-down');
+
+                    if (e.deltaY > 0 && !isPanoramaDown) {
+                        // 向下滚动，显示详情
+                        card.classList.add('panorama-down');
+                    } else if (e.deltaY < 0 && isPanoramaDown) {
+                        // 向上滚动，返回图片
+                        card.classList.remove('panorama-down');
+                    }
+                }, { passive: false });
+
+                // 触摸滑动支持
+                card.addEventListener('touchstart', (e) => {
+                    isScrolling = true;
+                    startY = e.touches[0].clientY;
+                }, { passive: true });
+
+                card.addEventListener('touchmove', (e) => {
+                    if (!isScrolling) return;
+
+                    const currentY = e.touches[0].clientY;
+                    const diff = startY - currentY;
+
+                    if (Math.abs(diff) > scrollThreshold) {
+                        const cardPanorama = card.querySelector('.card-panorama');
+                        const isPanoramaDown = card.classList.contains('panorama-down');
+
+                        if (diff > 0 && !isPanoramaDown) {
+                            // 向上滑动，显示详情
+                            card.classList.add('panorama-down');
+                            isScrolling = false;
+                        } else if (diff < 0 && isPanoramaDown) {
+                            // 向下滑动，返回图片
+                            card.classList.remove('panorama-down');
+                            isScrolling = false;
+                        }
+                    }
+                }, { passive: true });
+
+                card.addEventListener('touchend', () => {
+                    isScrolling = false;
+                }, { passive: true });
+            });
+        }
+
+        // 监听提供商选择变化
+        document.getElementById('aiProvider')?.addEventListener('change', function(e) {
+            const apiKeySection = document.getElementById('apiKeySection');
+            if (e.target.value === 'local') {
+                apiKeySection.style.display = 'none';
+            } else {
+                apiKeySection.style.display = 'block';
+            }
+        });
+
+        // 页面加载完成后初始化
+        window.addEventListener('load', function() {
+            setTimeout(() => document.getElementById('loader').classList.add('hidden'), 300);
+            renderSites();
+            initSearch();
+            updateNavFavoritesCount();
+            renderPhotography();
+            renderPopular();
+            renderHiddenGems();
+            initCardScroll();
+        });
+
+        // 滚动事件
+        window.onscroll = () => {
+            const btn = document.getElementById('backToTop');
+            if (window.scrollY > 300) btn.classList.add('show');
+            else btn.classList.remove('show');
+        };
+
+        // 点击模态框外部关闭
+        window.onclick = e => {
+            if (e.target === document.getElementById('detailModal')) {
+                closeModal();
+            }
+            if (e.target === document.getElementById('aiSettingsModal')) {
+                closeAISettings();
+            }
+        };
+
+        // ========== AI 功能模块 ==========
+
+        // 切换 AI 聊天面板
+        function toggleAIChat() {
+            const panel = document.getElementById('aiChatPanel');
+            const btn = document.getElementById('aiAssistantBtn');
+            isChatVisible = !isChatVisible;
+            
+            if (isChatVisible) {
+                panel.classList.add('show');
+                btn.style.display = 'none';
+                updateProviderStatus();
+            } else {
+                panel.classList.remove('show');
+                btn.style.display = 'flex';
+            }
+        }
+
+        // 更新提供商状态
+        function updateProviderStatus() {
+            const status = document.getElementById('providerStatus');
+            if (aiConfig.provider === 'local') {
+                status.className = 'provider-status active';
+                status.title = '本地模式';
+            } else if (aiConfig.apiKey) {
+                status.className = 'provider-status active';
+                status.title = aiConfig.provider === 'openai' ? 'OpenAI' : 'Anthropic';
+            } else {
+                status.className = 'provider-status inactive';
+                status.title = '未配置';
+            }
+        }
+
+        // 打开 AI 设置
+        function openAISettings() {
+            document.getElementById('aiSettingsModal').classList.add('show');
+            document.getElementById('aiProvider').value = aiConfig.provider;
+            document.getElementById('apiKeyInput').value = aiConfig.apiKey;
+            document.getElementById('aiModel').value = aiConfig.model;
+            
+            // 更新可见性
+            const apiKeySection = document.getElementById('apiKeySection');
+            if (aiConfig.provider === 'local') {
+                apiKeySection.style.display = 'none';
+            } else {
+                apiKeySection.style.display = 'block';
+            }
+        }
+
+        // 关闭 AI 设置
+        function closeAISettings() {
+            document.getElementById('aiSettingsModal').classList.remove('show');
+        }
+
+        // 切换 API 密钥可见性
+        function toggleApiKeyVisibility() {
+            const input = document.getElementById('apiKeyInput');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        // 保存 AI 设置
+        function saveAISettings() {
+            aiConfig.provider = document.getElementById('aiProvider').value;
+            aiConfig.apiKey = document.getElementById('apiKeyInput').value.trim();
+            aiConfig.model = document.getElementById('aiModel').value;
+            
+            localStorage.setItem('aiConfig', JSON.stringify(aiConfig));
+            updateProviderStatus();
+            closeAISettings();
+            
+            // 显示成功提示
+            const messages = document.getElementById('aiChatMessages');
+            addSystemMessage('设置已保存！AI 助手已更新。');
+        }
+
+        // 发送 AI 消息
+        async function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // 添加用户消息
+            addUserMessage(message);
+            input.value = '';
+            
+            // 显示加载状态
+            const loadingId = addLoadingMessage();
+            
+            try {
+                let response;
+                if (aiConfig.provider === 'local') {
+                    response = getLocalAIResponse(message);
+                } else if (aiConfig.provider === 'openai') {
+                    response = await callOpenAI(message);
+                } else if (aiConfig.provider === 'anthropic') {
+                    response = await callAnthropic(message);
+                }
+                
+                // 移除加载消息
+                removeLoadingMessage(loadingId);
+                
+                // 添加 AI 响应
+                addAIMessage(response);
+                
+                // 保存历史
+                saveChatHistory();
+            } catch (error) {
+                removeLoadingMessage(loadingId);
+                addAIMessage('抱歉，我遇到了一些问题。请检查 API 设置后重试。');
+                console.error('AI Error:', error);
+            }
+        }
+
+        // 添加用户消息
+        function addUserMessage(message) {
+            const messages = document.getElementById('aiChatMessages');
+            const div = document.createElement('div');
+            div.className = 'chat-message user';
+            div.innerHTML = `
+                <div class="message-avatar">👤</div>
+                <div class="message-bubble">${escapeHtml(message)}</div>
+            `;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        // 添加 AI 消息
+        function addAIMessage(message) {
+            const messages = document.getElementById('aiChatMessages');
+            const div = document.createElement('div');
+            div.className = 'chat-message ai';
+            div.innerHTML = `
+                <div class="message-avatar">🤖</div>
+                <div class="message-bubble">${formatAIResponse(message)}</div>
+            `;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+            
+            // 添加到历史
+            chatHistory.push({ role: 'ai', content: message });
+        }
+
+        // 添加系统消息
+        function addSystemMessage(message) {
+            const messages = document.getElementById('aiChatMessages');
+            const div = document.createElement('div');
+            div.className = 'chat-message ai';
+            div.innerHTML = `
+                <div class="message-avatar">📢</div>
+                <div class="message-bubble" style="font-style: italic; color: #64748b;">${escapeHtml(message)}</div>
+            `;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        // 添加加载消息
+        function addLoadingMessage() {
+            const messages = document.getElementById('aiChatMessages');
+            const id = 'loading-' + Date.now();
+            const div = document.createElement('div');
+            div.className = 'chat-message ai';
+            div.id = id;
+            div.innerHTML = `
+                <div class="message-avatar">🤖</div>
+                <div class="message-bubble">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            `;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+            return id;
+        }
+
+        // 移除加载消息
+        function removeLoadingMessage(id) {
+            const element = document.getElementById(id);
+            if (element) element.remove();
+        }
+
+        // 格式化 AI 响应
+        function formatAIResponse(text) {
+            // 转义 HTML
+            text = escapeHtml(text);
+            
+            // 处理代码块
+            text = text.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+            
+            // 处理行内代码
+            text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+            
+            // 处理换行
+            text = text.replace(/\n/g, '<br>');
+            
+            return text;
+        }
+
+        // HTML 转义
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 调用 OpenAI API
+        async function callOpenAI(message) {
+            if (!aiConfig.apiKey) {
+                throw new Error('未配置 API 密钥');
+            }
+            
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${aiConfig.apiKey}`
+                },
+                body: JSON.stringify({
+                    model: aiConfig.model,
+                    messages: [
+                        {
+                            role: 'system',
+                            content: '你是一个专业的澳门旅游助手，熟悉澳门的景点、美食、文化、交通等信息。请用友好、专业的语气回答用户的问题。'
+                        },
+                        ...chatHistory.slice(-10),
+                        { role: 'user', content: message }
+                    ],
+                    max_tokens: 1000,
+                    temperature: 0.7
+                })
+            });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error?.message || 'API 调用失败');
+            }
+            
+            const data = await response.json();
+            return data.choices[0].message.content;
+        }
+
+        // 调用 Anthropic API
+        async function callAnthropic(message) {
+            if (!aiConfig.apiKey) {
+                throw new Error('未配置 API 密钥');
+            }
+            
+            const response = await fetch('https://api.anthropic.com/v1/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': aiConfig.apiKey,
+                    'anthropic-version': '2023-06-01'
+                },
+                body: JSON.stringify({
+                    model: aiConfig.model,
+                    max_tokens: 1000,
+                    messages: [
+                        {
+                            role: 'user',
+                            content: `你是一个专业的澳门旅游助手，熟悉澳门的景点、美食、文化、交通等信息。请用友好、专业的语气回答用户的问题。\n\n用户问题：${message}`
+                        }
+                    ]
+                })
+            });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error?.message || 'API 调用失败');
+            }
+            
+            const data = await response.json();
+            return data.content[0].text;
+        }
+
+        // 本地 AI 响应
+        function getLocalAIResponse(message) {
+            const lowerMsg = message.toLowerCase();
+            
+            // 澳门景点推荐
+            if (lowerMsg.includes('推荐') && (lowerMsg.includes('景点') || lowerMsg.includes('必去'))) {
+                return `澳门必去景点推荐：\n\n1. 大三巴牌坊 - 澳门最具代表性的地标，世界文化遗产\n2. 澳门旅游塔 - 高338米，可俯瞰整个澳门\n3. 龙环葡韵 - 薄荷绿色的葡式建筑群\n4. 议事亭前地 - 澳门市中心的核心区域\n5. 威尼斯人度假村 - 亚洲最大综合度假村\n\n你想了解哪个景点的详细信息吗？`;
+            }
+            
+            // 旅游路线
+            if (lowerMsg.includes('路线') || lowerMsg.includes('行程')) {
+                return `澳门一日游推荐路线：\n\n上午：\n• 大三巴牌坊（游览1小时）\n• 议事亭前地（步行15分钟）\n• 澳门博物馆（游览1小时）\n\n下午：\n• 龙环葡韵（游览1小时）\n• 威尼斯人度假村（游览2小时）\n• 澳门旅游塔（观赏夜景）\n\n晚上：\n• 澳门旅游塔观赏夜景\n• 路环渔村品尝海鲜\n\n需要我为你定制多日游路线吗？`;
+            }
+            
+            // 美食推荐
+            if (lowerMsg.includes('美食') || lowerMsg.includes('吃') || lowerMsg.includes('餐厅')) {
+                return `澳门必尝美食推荐：\n\n🍜 传统小吃：\n• 葡式蛋挞（安德鲁饼店）\n• 猪扒包\n• 水蟹粥\n• 牛杂\n\n🍽️ 正餐：\n• 葡国鸡\n• 非洲鸡\n• 马介休球\n• 澳门烧肉\n\n🍰 甜品：\n• 杏仁饼\n• 咀香园饼家\n• 双皮奶\n\n推荐餐厅：安德鲁饼店、诚昌饭店、金马伦咖啡室。`;
+            }
+            
+            // 摄影攻略
+            if (lowerMsg.includes('摄影') || lowerMsg.includes('拍照')) {
+                return `澳门摄影攻略：\n\n🌅 最佳拍摄时间：\n• 日落：主教山、南湾湖畔（17:00-19:00）\n• 夜景：澳门塔、威尼斯人（19:00-22:00）\n\n📸 推荐拍摄点：\n1. 大三巴牌坊 - 清晨或黄昏光线最佳\n2. 澳门塔 - 夜景和日出都很美\n3. 龙环葡韵 - 葡式建筑群，适合人文摄影\n4. 路环渔村 - 彩色小屋，街拍好去处\n5. 黑沙滩 - 独特的黑色沙滩\n\n🎯 拍摄技巧：\n• 使用三脚架拍摄夜景\n• 携带广角和长焦镜头\n• 避开正午顶光\n• 注意构图和光影`;
+            }
+            
+            // 交通信息
+            if (lowerMsg.includes('交通') || lowerMsg.includes('怎么去') || lowerMsg.includes('公交')) {
+                return `澳门交通指南：\n\n🚇 公交车：\n• 覆盖全澳门，票价约 3-6 MOP\n• 可使用澳门通卡\n\n🚕 出租车：\n• 起步价约 19 MOP\n• 可用支付宝/微信支付\n\n🚌 免费穿梭巴士：\n• 各大赌场提供免费班车\n• 连接口岸、码头、机场\n\n🚗 租车：\n• 需要国际驾照\n• 建议乘坐公共交通更方便\n\n需要我帮你规划具体的交通路线吗？`;
+            }
+            
+            // 住宿推荐
+            if (lowerMsg.includes('住宿') || lowerMsg.includes('酒店') || lowerMsg.includes('住')) {
+                return `澳门住宿推荐：\n\n🏨 豪华酒店：\n• 威尼斯人度假村\n• 澳门银河\n• 新濠天地\n• 澳门四季酒店\n\n🏢 中档酒店：\n• 澳门皇冠假日酒店\n• 澳门君悦酒店\n• 澳门凯旋门酒店\n\n💰 经济型：\n• 各种民宿和青年旅社\n• 路环区域的酒店相对便宜\n\n💡 住宿建议：\n• 建议住在澳门半岛，交通便利\n• 预订时可查看是否包含免费穿梭巴士\n`;
+            }
+            
+            // 默认回复
+            return `我是你的澳门旅游助手，可以帮你：\n\n📍 推荐景点和路线\n🍜 介绍澳门美食\n📸 提供摄影攻略\n🚌 解答交通问题\n🏨 推荐住宿选择\n\n请告诉我你感兴趣的内容，我会尽力帮助你！`;
+        }
+
+        // 快捷提问
+        function askQuestion(question) {
+            document.getElementById('aiInput').value = question;
+            sendAIMessage();
+        }
+
+        // 清空聊天历史
+        function clearChatHistory() {
+            if (confirm('确定要清空聊天历史吗？')) {
+                chatHistory = [];
+                const messages = document.getElementById('aiChatMessages');
+                messages.innerHTML = `
+                    <div class="chat-message ai">
+                        <div class="message-avatar">🤖</div>
+                        <div class="message-bubble">
+                            你好！我是你的澳门旅游AI助手。我可以为你推荐景点、规划路线、提供美食建议等。有什么可以帮助你的吗？
+                        </div>
+                    </div>
+                `;
+                localStorage.setItem('chatHistory', '[]');
+            }
+        }
+
+        // 保存聊天历史
+        function saveChatHistory() {
+            // 只保存最近 20 条
+            if (chatHistory.length > 20) {
+                chatHistory = chatHistory.slice(-20);
+            }
+            localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+        }
+
+        // 监听提供商选择变化
+        document.getElementById('aiProvider')?.addEventListener('change', function(e) {
+            const apiKeySection = document.getElementById('apiKeySection');
+            if (e.target.value === 'local') {
+                apiKeySection.style.display = 'none';
+            } else {
+                apiKeySection.style.display = 'block';
+            }
+        });
+
+        // 初始化卡片滚动功能
+        function initCardScroll() {
+            const cards = document.querySelectorAll('.card, .photo-card');
+
+            cards.forEach(card => {
+                let isScrolling = false;
+                let startY = 0;
+                let scrollThreshold = 30;
+
+                card.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    const cardPanorama = card.querySelector('.card-panorama');
+                    const isPanoramaDown = card.classList.contains('panorama-down');
+
+                    if (e.deltaY > 0 && !isPanoramaDown) {
+                        // 向下滚动，显示详情
+                        card.classList.add('panorama-down');
+                    } else if (e.deltaY < 0 && isPanoramaDown) {
+                        // 向上滚动，返回图片
+                        card.classList.remove('panorama-down');
+                    }
+                }, { passive: false });
+
+                // 触摸滑动支持
+                card.addEventListener('touchstart', (e) => {
+                    isScrolling = true;
+                    startY = e.touches[0].clientY;
+                }, { passive: true });
+
+                card.addEventListener('touchmove', (e) => {
+                    if (!isScrolling) return;
+
+                    const currentY = e.touches[0].clientY;
+                    const diff = startY - currentY;
+
+                    if (Math.abs(diff) > scrollThreshold) {
+                        const cardPanorama = card.querySelector('.card-panorama');
+                        const isPanoramaDown = card.classList.contains('panorama-down');
+
+                        if (diff > 0 && !isPanoramaDown) {
+                            // 向上滑动，显示详情
+                            card.classList.add('panorama-down');
+                            isScrolling = false;
+                        } else if (diff < 0 && isPanoramaDown) {
+                            // 向下滑动，返回图片
+                            card.classList.remove('panorama-down');
+                            isScrolling = false;
+                        }
+                    }
+                }, { passive: true });
+
+                card.addEventListener('touchend', () => {
+                    isScrolling = false;
+                }, { passive: true });
+            });
+        }
+
+
+    </script>
+</body>
+</html>

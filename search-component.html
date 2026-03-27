@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索栏组件</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        /* 搜索栏容器 */
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* 搜索输入框包装器 */
+        .search-wrapper {
+            position: relative;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .search-wrapper:focus-within {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+
+        /* 搜索输入框 */
+        .search-input {
+            width: 100%;
+            padding: 16px 50px 16px 20px;
+            font-size: 16px;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            outline: none;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: #667eea;
+        }
+
+        /* 搜索图标 */
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 20px;
+            pointer-events: none;
+        }
+
+        .search-wrapper.active .search-icon {
+            color: #667eea;
+        }
+
+        /* 清除按钮 */
+        .clear-btn {
+            position: absolute;
+            right: 45px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #f0f0f0;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            transition: all 0.2s ease;
+        }
+
+        .clear-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .search-wrapper.has-value .clear-btn {
+            display: flex;
+        }
+
+        /* 搜索建议下拉框 */
+        .search-suggestions {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            display: none;
+            z-index: 1000;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .search-suggestions.show {
+            display: block;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 建议项 */
+        .suggestion-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.2s ease;
+        }
+
+        .suggestion-item:hover,
+        .suggestion-item.active {
+            background: #f8f9ff;
+        }
+
+        .suggestion-item.active {
+            border-left: 3px solid #667eea;
+        }
+
+        .suggestion-icon {
+            color: #999;
+            font-size: 16px;
+        }
+
+        .suggestion-text {
+            flex: 1;
+        }
+
+        .suggestion-type {
+            font-size: 12px;
+            color: #999;
+            background: #f0f0f0;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        /* 搜索历史 */
+        .search-history {
+            margin-top: 20px;
+        }
+
+        .history-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .clear-history {
+            font-size: 12px;
+            color: #667eea;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        .clear-history:hover {
+            text-decoration: underline;
+        }
+
+        .history-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .history-item {
+            background: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .history-item:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102,126,234,0.3);
+        }
+
+        /* 搜索结果 */
+        .search-results {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .search-results.show {
+            display: block;
+        }
+
+        .result-item {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .result-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .result-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .result-desc {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* 快捷键提示 */
+        .keyboard-shortcut {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .shortcut-item {
+            background: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #666;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .shortcut-key {
+            display: inline-block;
+            background: #f0f0f0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-left: 6px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 640px) {
+            body {
+                padding: 20px;
+            }
+
+            .search-input {
+                font-size: 14px;
+                padding: 14px 45px 14px 16px;
+            }
+
+            .keyboard-shortcut {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="search-container">
+        <!-- 搜索框 -->
+        <div class="search-wrapper">
+            <input
+                type="text"
+                class="search-input"
+                placeholder="搜索..."
+                autocomplete="off"
+            >
+            <button class="clear-btn" title="清除">×</button>
+            <span class="search-icon">🔍</span>
+
+            <!-- 搜索建议 -->
+            <div class="search-suggestions">
+                <div class="suggestion-item" data-value="搜索建议1">
+                    <span class="suggestion-icon">💡</span>
+                    <span class="suggestion-text">搜索建议1</span>
+                    <span class="suggestion-type">建议</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 搜索历史 -->
+        <div class="search-history">
+            <div class="history-title">
+                <span>搜索历史</span>
+                <button class="clear-history">清除历史</button>
+            </div>
+            <div class="history-list">
+                <!-- 历史记录项将动态添加 -->
+            </div>
+        </div>
+
+        <!-- 搜索结果 -->
+        <div class="search-results">
+            <!-- 搜索结果将动态添加 -->
+        </div>
+
+        <!-- 快捷键提示 -->
+        <div class="keyboard-shortcut">
+            <div class="shortcut-item">
+                搜索 <span class="shortcut-key">Enter</span>
+            </div>
+            <div class="shortcut-item">
+                关闭建议 <span class="shortcut-key">Esc</span>
+            </div>
+            <div class="shortcut-item">
+                导航建议 <span class="shortcut-key">↑↓</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟数据
+        const mockData = [
+            { title: '产品功能介绍', desc: '了解产品的核心功能和优势' },
+            { title: '用户指南', desc: '详细的使用说明和操作步骤' },
+            { title: '常见问题', desc: '用户常见问题的解答' },
+            { title: '价格方案', desc: '灵活的定价和订阅选项' },
+            { title: '企业版功能', desc: '为企业用户提供的高级功能' },
+            { title: 'API文档', desc: '开发者接口和集成指南' },
+        ];
+
+        // 搜索栏组件
+        class SearchComponent {
+            constructor(options = {}) {
+                this.container = options.container;
+                this.input = options.input;
+                this.suggestionsContainer = options.suggestionsContainer;
+                this.historyContainer = options.historyContainer;
+                this.resultsContainer = options.resultsContainer;
+                this.clearBtn = options.clearBtn;
+                this.clearHistoryBtn = options.clearHistoryBtn;
+                this.data = options.data || [];
+                this.maxHistory = options.maxHistory || 5;
+                this.history = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+                this.activeIndex = -1;
+                this.debounceTimer = null;
+
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.renderHistory();
+            }
+
+            bindEvents() {
+                // 输入事件（防抖）
+                this.input.addEventListener('input', (e) => {
+                    const value = e.target.value.trim();
+                    this.updateClearButton(value);
+                    this.debounce(() => {
+                        this.handleInput(value);
+                    }, 300);
+                });
+
+                // 聚焦事件
+                this.input.addEventListener('focus', () => {
+                    this.container.classList.add('active');
+                    if (this.input.value.trim()) {
+                        this.showSuggestions(this.getSuggestions(this.input.value.trim()));
+                    }
+                });
+
+                // 失焦事件
+                this.input.addEventListener('blur', () => {
+                    setTimeout(() => {
+                        this.hideSuggestions();
+                        this.container.classList.remove('active');
+                    }, 200);
+                });
+
+                // 键盘事件
+                this.input.addEventListener('keydown', (e) => {
+                    this.handleKeyDown(e);
+                });
+
+                // 清除按钮
+                this.clearBtn.addEventListener('click', () => {
+                    this.clearInput();
+                });
+
+                // 清除历史
+                this.clearHistoryBtn.addEventListener('click', () => {
+                    this.clearHistory();
+                });
+            }
+
+            debounce(func, delay) {
+                clearTimeout(this.debounceTimer);
+                this.debounceTimer = setTimeout(func, delay);
+            }
+
+            handleInput(value) {
+                if (!value) {
+                    this.hideSuggestions();
+                    this.hideResults();
+                    return;
+                }
+
+                const suggestions = this.getSuggestions(value);
+                this.showSuggestions(suggestions);
+            }
+
+            getSuggestions(value) {
+                return this.data
+                    .filter(item => 
+                        item.title.toLowerCase().includes(value.toLowerCase()) ||
+                        item.desc.toLowerCase().includes(value.toLowerCase())
+                    )
+                    .map(item => ({
+                        value: item.title,
+                        text: item.title,
+                        type: '建议',
+                        icon: '📄'
+                    }));
+            }
+
+            showSuggestions(suggestions) {
+                if (!suggestions || suggestions.length === 0) {
+                    this.hideSuggestions();
+                    return;
+                }
+
+                const html = suggestions.map((item, index) => `
+                    <div class="suggestion-item ${index === this.activeIndex ? 'active' : ''}" data-value="${item.value}">
+                        <span class="suggestion-icon">${item.icon}</span>
+                        <span class="suggestion-text">${this.highlightMatch(item.text)}</span>
+                        <span class="suggestion-type">${item.type}</span>
+                    </div>
+                `).join('');
+
+                this.suggestionsContainer.innerHTML = html;
+                this.suggestionsContainer.classList.add('show');
+                this.bindSuggestionEvents();
+            }
+
+            hideSuggestions() {
+                this.suggestionsContainer.classList.remove('show');
+                this.activeIndex = -1;
+            }
+
+            highlightMatch(text) {
+                const query = this.input.value.trim().toLowerCase();
+                if (!query) return text;
+                
+                const regex = new RegExp(`(${query})`, 'gi');
+                return text.replace(regex, '<strong>$1</strong>');
+            }
+
+            bindSuggestionEvents() {
+                const items = this.suggestionsContainer.querySelectorAll('.suggestion-item');
+                items.forEach((item, index) => {
+                    item.addEventListener('click', () => {
+                        this.selectSuggestion(item.dataset.value);
+                    });
+                });
+            }
+
+            handleKeyDown(e) {
+                const items = this.suggestionsContainer.querySelectorAll('.suggestion-item');
+                
+                switch (e.key) {
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        this.activeIndex = Math.min(this.activeIndex + 1, items.length - 1);
+                        this.updateActiveSuggestion();
+                        break;
+                    
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        this.activeIndex = Math.max(this.activeIndex - 1, 0);
+                        this.updateActiveSuggestion();
+                        break;
+                    
+                    case 'Enter':
+                        e.preventDefault();
+                        if (this.activeIndex >= 0 && items[this.activeIndex]) {
+                            this.selectSuggestion(items[this.activeIndex].dataset.value);
+                        } else {
+                            this.performSearch(this.input.value.trim());
+                        }
+                        break;
+                    
+                    case 'Escape':
+                        this.hideSuggestions();
+                        this.input.blur();
+                        break;
+                }
+            }
+
+            updateActiveSuggestion() {
+                const items = this.suggestionsContainer.querySelectorAll('.suggestion-item');
+                items.forEach((item, index) => {
+                    item.classList.toggle('active', index === this.activeIndex);
+                });
+            }
+
+            selectSuggestion(value) {
+                this.input.value = value;
+                this.updateClearButton(value);
+                this.hideSuggestions();
+                this.performSearch(value);
+            }
+
+            performSearch(query) {
+                if (!query) return;
+
+                // 添加到历史记录
+                this.addToHistory(query);
+
+                // 执行搜索
+                const results = this.data.filter(item => 
+                    item.title.toLowerCase().includes(query.toLowerCase()) ||
+                    item.desc.toLowerCase().includes(query.toLowerCase())
+                );
+
+                this.showResults(results, query);
+                this.hideSuggestions();
+            }
+
+            showResults(results, query) {
+                if (results.length === 0) {
+                    this.resultsContainer.innerHTML = `
+                        <div style="text-align: center; color: #999; padding: 20px;">
+                            未找到与 "${query}" 相关的结果
+                        </div>
+                    `;
+                } else {
+                    const html = results.map(item => `
+                        <div class="result-item" onclick="window.location.href='#'">
+                            <div class="result-title">${this.highlightMatch(item.title)}</div>
+                            <div class="result-desc">${this.highlightMatch(item.desc)}</div>
+                        </div>
+                    `).join('');
+                    this.resultsContainer.innerHTML = html;
+                }
+
+                this.resultsContainer.classList.add('show');
+            }
+
+            hideResults() {
+                this.resultsContainer.classList.remove('show');
+            }
+
+            addToHistory(query) {
+                // 移除已存在的相同查询
+                this.history = this.history.filter(item => item !== query);
+                
+                // 添加到开头
+                this.history.unshift(query);
+                
+                // 限制历史记录数量
+                this.history = this.history.slice(0, this.maxHistory);
+                
+                // 保存到localStorage
+                localStorage.setItem('searchHistory', JSON.stringify(this.history));
+                
+                // 更新显示
+                this.renderHistory();
+            }
+
+            renderHistory() {
+                if (this.history.length === 0) {
+                    this.historyContainer.innerHTML = '<div style="color: #999; font-size: 14px;">暂无搜索历史</div>';
+                    return;
+                }
+
+                const html = this.history.map(item => `
+                    <div class="history-item" onclick="searchComponent.selectSuggestion('${item}')">
+                        ${item}
+                    </div>
+                `).join('');
+
+                this.historyContainer.innerHTML = html;
+            }
+
+            clearHistory() {
+                if (confirm('确定要清除所有搜索历史吗？')) {
+                    this.history = [];
+                    localStorage.removeItem('searchHistory');
+                    this.renderHistory();
+                }
+            }
+
+            updateClearButton(value) {
+                if (value) {
+                    this.container.classList.add('has-value');
+                } else {
+                    this.container.classList.remove('has-value');
+                }
+            }
+
+            clearInput() {
+                this.input.value = '';
+                this.updateClearButton('');
+                this.hideSuggestions();
+                this.hideResults();
+                this.input.focus();
+            }
+        }
+
+        // 初始化搜索组件
+        const searchComponent = new SearchComponent({
+            container: document.querySelector('.search-wrapper'),
+            input: document.querySelector('.search-input'),
+            suggestionsContainer: document.querySelector('.search-suggestions'),
+            historyContainer: document.querySelector('.history-list'),
+            resultsContainer: document.querySelector('.search-results'),
+            clearBtn: document.querySelector('.clear-btn'),
+            clearHistoryBtn: document.querySelector('.clear-history'),
+            data: mockData,
+            maxHistory: 5
+        });
+    </script>
+</body>
+</html>
