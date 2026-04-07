@@ -8,24 +8,109 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="description" content="澳门旅游指南 - 探索澳门热门景点、摄影推荐和美食攻略。包含详细的景点介绍、交通指南和实用旅游信息。">
+    <meta name="keywords" content="澳门旅游,澳门景点,澳门美食,澳门摄影,大三巴,妈阁庙,黑沙湾,澳门攻略">
+    <meta property="og:title" content="澳门·风景印象 - 全平台适配版">
+    <meta property="og:description" content="探索澳门热门景点、摄影推荐和美食攻略">
+    <meta property="og:type" content="website">
     <title>澳门·风景印象 - 全平台适配版</title>
     <style>
+        /* CSS 变量定义 */
+        :root {
+            /* 颜色系统 */
+            --primary-color: #667eea;
+            --primary-dark: #5a6fd6;
+            --primary-light: #764ba2;
+            --secondary-color: #f59e0b;
+            --danger-color: #e53e3e;
+            --success-color: #22c55e;
+            
+            /* 文字颜色 */
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-tertiary: #64748b;
+            --text-light: #94a3b8;
+            
+            /* 背景颜色 */
+            --bg-primary: #f8fafc;
+            --bg-secondary: #f1f5f9;
+            --bg-card: #ffffff;
+            --bg-overlay: rgba(0, 0, 0, 0.7);
+            
+            /* 边框颜色 */
+            --border-color: #e2e8f0;
+            --border-hover: #cbd5e1;
+            
+            /* 阴影 */
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 16px 48px rgba(102, 126, 234, 0.2);
+            
+            /* 圆角 */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-full: 9999px;
+            
+            /* 动画 */
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* 字体 */
+            --font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', sans-serif;
+            --font-mono: 'SF Mono', Monaco, 'Courier New', monospace;
+        }
+
+        /* 深色模式支持 */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --text-primary: #e2e8f0;
+                --text-secondary: #cbd5e1;
+                --text-tertiary: #94a3b8;
+                --text-light: #64748b;
+                --bg-primary: #0f172a;
+                --bg-secondary: #1e293b;
+                --bg-card: #1e293b;
+                --bg-overlay: rgba(0, 0, 0, 0.8);
+                --border-color: #334155;
+                --border-hover: #475569;
+            }
+        }
+
+        /* 深色模式手动切换 */
+        body.dark-mode {
+            --text-primary: #e2e8f0;
+            --text-secondary: #cbd5e1;
+            --text-tertiary: #94a3b8;
+            --text-light: #64748b;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #1e293b;
+            --bg-overlay: rgba(0, 0, 0, 0.8);
+            --border-color: #334155;
+            --border-hover: #475569;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', sans-serif;
+            font-family: var(--font-family);
             -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            line-height: 1.5;
-            color: #2d3e50;
+            line-height: 1.6;
+            color: var(--text-primary);
             overflow-x: hidden;
+            transition: background var(--transition-normal), color var(--transition-normal);
         }
 
         body::before {
@@ -48,40 +133,63 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--bg-card);
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            transition: opacity 0.3s;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loader-wrapper.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
         }
 
         .loader {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #e2e8f0;
-            border-top-color: #2a5298;
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--border-color);
+            border-top-color: var(--primary-color);
             border-radius: 50%;
-            animation: spin 0.6s linear infinite;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        .loader-text {
+            font-size: 0.9rem;
+            color: var(--text-tertiary);
+            animation: pulse 1.5s ease-in-out infinite;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
         .hidden {
             opacity: 0;
+            visibility: hidden;
             pointer-events: none;
         }
 
         /* 导航栏 */
         .navbar {
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--bg-card);
             backdrop-filter: blur(10px);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-sm);
             position: sticky;
             top: 0;
             z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+            transition: background var(--transition-normal), box-shadow var(--transition-normal);
         }
 
         .nav-container {
@@ -95,7 +203,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 0.7rem 0;
-            border-bottom: 1px solid #eef2f7;
+            border-bottom: 1px solid var(--border-color);
             min-height: 56px;
         }
 
@@ -106,6 +214,17 @@
             text-decoration: none;
             cursor: pointer;
             flex-shrink: 0;
+            transition: transform var(--transition-fast);
+        }
+
+        .logo:hover {
+            transform: scale(1.02);
+        }
+
+        .logo:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 4px;
+            border-radius: var(--radius-sm);
         }
 
         .logo-icon {
@@ -120,13 +239,13 @@
         .logo-main {
             font-size: 1rem;
             font-weight: 600;
-            color: #1e3c72;
+            color: var(--primary-color);
             letter-spacing: 0.5px;
         }
 
         .logo-sub {
             font-size: 0.65rem;
-            color: #9aaec2;
+            color: var(--text-tertiary);
         }
 
         .nav-tools {
@@ -212,17 +331,200 @@
         }
 
         .menu-toggle {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-toggle::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transition: left 0.3s;
+            z-index: -1;
+        }
+
+        .menu-toggle:hover::before {
+            left: 0;
+        }
+
+        .menu-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .menu-toggle:active {
+            transform: scale(0.95);
+        }
+
+        /* 侧边菜单 */
+        .sidebar-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 30px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 80px 20px 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu.show {
+            right: 0;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 999;
+        }
+
+        .sidebar-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .sidebar-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .sidebar-header h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .sidebar-header p {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #475569;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .sidebar-nav a:hover {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .sidebar-nav a.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .sidebar-nav a .icon {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .sidebar-footer p {
+            color: #64748b;
+            font-size: 0.85rem;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+        }
+
+        .sidebar-stat {
+            background: white;
+            padding: 0.8rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar-stat .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .sidebar-stat .label {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 0.2rem;
+        }
+
+        .close-sidebar {
+            position: absolute;
+            top: 20px;
+            right: 20px;
             background: none;
             border: none;
             font-size: 1.5rem;
             cursor: pointer;
+            color: #64748b;
+            transition: all 0.3s;
             padding: 0.5rem;
             border-radius: 8px;
-            transition: background 0.2s;
         }
 
-        .menu-toggle:hover {
+        .close-sidebar:hover {
             background: #f1f5f9;
+            color: #1e293b;
+            transform: rotate(90deg);
         }
 
         .nav-links {
@@ -281,6 +583,304 @@
             }
         }
 
+        /* 轮播图下方搜索栏样式 */
+        .carousel-search-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 1.5rem 1rem;
+        }
+        
+        .carousel-search-wrapper .search-box {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 50px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 0.5rem 0.5rem 0.5rem 1.2rem;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .carousel-search-wrapper .search-box:focus-within {
+            border-color: #667eea;
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.25);
+        }
+        
+        .carousel-search-wrapper .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            color: #1e293b;
+            background: transparent;
+            padding: 0.5rem;
+        }
+        
+        .carousel-search-wrapper .search-input::placeholder {
+            color: #94a3b8;
+        }
+        
+        .carousel-search-wrapper .search-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .carousel-search-wrapper .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .carousel-search-wrapper .clear-button {
+            background: none;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            color: #cbd5e1;
+            padding: 0.5rem;
+            transition: color 0.2s;
+        }
+        
+        .carousel-search-wrapper .clear-button:hover {
+            color: #64748b;
+        }
+
+        /* 轮播图样式 */
+        .carousel {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
+            overflow: hidden;
+            border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+        }
+
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            height: 100%;
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .carousel-slide .slide-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: -1;
+        }
+        
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .carousel-slide img.loaded {
+            opacity: 1;
+        }
+
+        .carousel-slide .slide-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 2rem;
+            background: linear-gradient(transparent, rgba(0,0,0,0.6));
+            color: white;
+        }
+
+        .carousel-slide .slide-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .carousel-slide .slide-desc {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .carousel-dots {
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.5rem;
+            z-index: 10;
+        }
+
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .carousel-dot.active {
+            background: white;
+            transform: scale(1.2);
+        }
+
+        .carousel-dot:hover {
+            background: rgba(255,255,255,0.8);
+        }
+
+        .carousel-arrows {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 1rem;
+            pointer-events: none;
+        }
+
+        .carousel-arrow {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #1e293b;
+            pointer-events: auto;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            backdrop-filter: blur(10px);
+        }
+
+        .carousel:hover .carousel-arrow {
+            opacity: 1;
+        }
+
+        .carousel-arrow:hover {
+            background: white;
+            transform: scale(1.15);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        }
+
+        .carousel-arrow:active {
+            transform: scale(0.95);
+            background: rgba(255,255,255,0.95);
+        }
+
+        .carousel-arrow:focus {
+            outline: 2px solid #667eea;
+            outline-offset: 2px;
+            opacity: 1;
+        }
+
+        .carousel-arrow.left-arrow {
+            margin-left: 0.5rem;
+        }
+
+        .carousel-arrow.right-arrow {
+            margin-right: 0.5rem;
+        }
+        
+        .carousel-slide.image-error .slide-bg {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .carousel-slide.image-error .slide-bg::after {
+            content: '🖼️';
+            font-size: 3rem;
+            opacity: 0.5;
+        }
+
+        /* 轮播图切换动画 */
+        .carousel-slide.transitioning {
+            animation: slideTransition 0.5s ease-in-out;
+        }
+
+        @keyframes slideTransition {
+            0% {
+                opacity: 0.7;
+                transform: scale(0.98);
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* 轮播图标题动画 */
+        .carousel-slide .slide-title {
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+        .carousel-slide .slide-desc {
+            animation: fadeInUp 0.6s ease-out 0.4s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Hero区域 - 轮播图+右侧内容 */
+        .hero-section {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            min-height: 420px;
+        }
+
+        .hero-left {
+            flex: 1.2;
+            min-width: 0;
+        }
+
+
+
+        @media (max-width: 640px) {
+            .hero-section {
+                min-height: auto;
+                gap: 1rem;
+            }
+        }
+
         /* 搜索栏浮动图标 */
         .search-float-icon {
             position: fixed;
@@ -288,7 +888,7 @@
             right: 1rem;
             width: 48px;
             height: 48px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -298,7 +898,7 @@
             border: none;
             z-index: 99;
             font-size: 1.4rem;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all var(--transition-normal);
             opacity: 0;
             pointer-events: none;
             transform: scale(0.8) translateY(-20px);
@@ -315,33 +915,21 @@
             box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
         }
 
+        .search-float-icon:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .search-float-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+        }
+
         .search-float-icon:active {
             transform: scale(0.95);
         }
 
-        .search-section.hidden {
-            display: none;
-        }
 
-        .hot-searches {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            justify-content: center;
-            margin-top: 0.8rem;
-        }
-
-        .hot-tag {
-            padding: 0.25rem 0.8rem;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 24px;
-            font-size: 0.75rem;
-            color: #4a5568;
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
 
         /* 筛选标签 */
         .filter-section {
@@ -488,6 +1076,18 @@
 
         .search-suggestions.show {
             display: block;
+            animation: slideDown 0.2s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .search-suggestions li {
@@ -498,11 +1098,23 @@
             display: flex;
             align-items: center;
             gap: 0.8rem;
-            transition: background 0.2s;
+            transition: all 0.2s;
         }
 
         .search-suggestions li:hover {
-            background: #f8fafc;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding-left: 1.2rem;
+        }
+
+        .search-suggestions li.active {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-left: 3px solid #667eea;
+        }
+
+        .suggestion-icon {
+            font-size: 1rem;
+            width: 24px;
+            text-align: center;
         }
 
         .suggestion-text {
@@ -511,10 +1123,166 @@
             color: #334155;
         }
 
+        .suggestion-text .highlight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0 4px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
         .suggestion-meta {
             font-size: 0.75rem;
             color: #94a3b8;
         }
+
+        .suggestion-tag {
+            background: #e0e7ff;
+            color: #667eea;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .search-no-result {
+            padding: 2rem;
+            text-align: center;
+            color: #94a3b8;
+        }
+
+        .search-no-result .icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* 搜索历史 */
+        .search-history {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            margin-top: 0.5rem;
+            padding: 1rem;
+            z-index: 10;
+            display: none;
+            animation: slideDown 0.2s ease;
+        }
+
+        .search-history.show {
+            display: block;
+        }
+
+        .search-history-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .search-history-title span {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        .search-history-title .clear-btn {
+            font-size: 0.75rem;
+            color: #667eea;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .search-history-title .clear-btn:hover {
+            text-decoration: underline;
+        }
+
+        .search-history-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .search-history-item {
+            background: #f8fafc;
+            padding: 0.4rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #e2e8f0;
+        }
+
+        .search-history-item:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .search-history-item .delete {
+            margin-left: 0.3rem;
+            opacity: 0.6;
+        }
+
+        .search-history-item:hover .delete {
+            opacity: 1;
+        }
+
+        /* 搜索加载状态 */
+        .search-loading {
+            display: none;
+            position: absolute;
+            right: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e2e8f0;
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: searchSpin 0.8s linear infinite;
+            z-index: 5;
+        }
+
+        @keyframes searchSpin {
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+
+        .search-box.loading .search-loading {
+            display: block;
+        }
+
+        .search-box.loading .search-icon {
+            opacity: 0;
+        }
+
+        /* 热门搜索 */
+        .hot-searches {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+
+        .hot-searches-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 0.8rem;
+        }
+
+        .hot-searches-title::before {
+            content: '🔥 ';
+        }
+
+
 
         /* 景点卡片网格 */
         .grid {
@@ -541,11 +1309,34 @@
             position: relative;
             height: 320px;
             border: 1px solid rgba(255, 255, 255, 0.5);
+            transform-origin: center;
         }
 
         .card:hover {
             transform: translateY(-8px) scale(1.02);
             box-shadow: 0 16px 48px rgba(102, 126, 234, 0.2);
+        }
+
+        .card:active {
+            transform: translateY(-8px) scale(0.98);
+            transition: all 0.1s ease;
+        }
+
+        .card.clicking {
+            animation: cardClick 0.3s ease;
+        }
+
+        @keyframes cardClick {
+            0% {
+                transform: translateY(-8px) scale(1.02);
+            }
+            50% {
+                transform: translateY(-8px) scale(1.05);
+                box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+            }
+            100% {
+                transform: translateY(-8px) scale(1.02);
+            }
         }
 
         .card-inner {
@@ -563,6 +1354,23 @@
             height: 100%;
             transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 2;
+            overflow: hidden;
+        }
+
+        .card-panorama::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover .card-panorama::after {
+            opacity: 1;
         }
 
         .card.panorama-down .card-panorama {
@@ -573,6 +1381,11 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .card:hover .card-panorama img {
+            transform: scale(1.05);
         }
 
         .card-info {
@@ -587,10 +1400,22 @@
             display: flex;
             flex-direction: column;
             z-index: 1;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
         }
 
         .card.panorama-down .card-info {
             transform: translateY(-100%);
+        }
+
+        .card-info-content {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s ease 0.2s;
+        }
+
+        .card.panorama-down .card-info-content {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .card-indicator {
@@ -607,6 +1432,7 @@
             opacity: 0;
             transition: opacity 0.3s;
             pointer-events: none;
+            backdrop-filter: blur(4px);
         }
 
         .card:hover .card-indicator {
@@ -620,10 +1446,12 @@
 
         .card.panorama-down .card-indicator-top {
             opacity: 1;
+            background: rgba(102, 126, 234, 0.8);
         }
 
         .card.panorama-down .card-indicator-bottom {
             opacity: 1;
+            background: rgba(102, 126, 234, 0.8);
         }
 
         .card-content {
@@ -881,6 +1709,40 @@
             color: #e53e3e;
         }
 
+        .modal-favorite-btn {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #ff6b6b;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .modal-favorite-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        }
+
+        .modal-favorite-btn:active {
+            transform: scale(0.95);
+        }
+
+        .modal-favorite-btn.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff4757);
+            color: white;
+        }
+
         .modal-img {
             width: 100%;
             height: 300px;
@@ -934,17 +1796,18 @@
             position: fixed;
             bottom: 2rem;
             right: 1rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
             color: white;
             border: none;
             padding: 0.8rem 1rem;
-            border-radius: 50px;
+            border-radius: var(--radius-full);
             cursor: pointer;
             font-size: 0.9rem;
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-            transition: all 0.3s;
+            transition: all var(--transition-normal);
             opacity: 0;
             transform: translateY(20px);
+            z-index: 1000;
         }
 
         #backToTop.show {
@@ -955,6 +1818,15 @@
         #backToTop:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        #backToTop:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        #backToTop:active {
+            transform: translateY(0) scale(0.95);
         }
 
         /* 页面切换 */
@@ -1242,6 +2114,67 @@
             color: #0891b2;
             border-radius: 6px;
             font-size: 0.75rem;
+        }
+
+        /* 摄影卡片点击涟漪动画 */
+        .photo-card.ripple::before {
+            content: '';
+            position: absolute;
+            top: var(--click-y, 50%);
+            left: var(--click-x, 50%);
+            width: 10px;
+            height: 10px;
+            background: rgba(102, 126, 234, 0.4);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            animation: ripple-effect 0.6s ease-out;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-effect {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(40);
+                opacity: 0;
+            }
+        }
+
+        /* 卡片展开动画 */
+        .photo-card.card-expand {
+            animation: card-expand-anim 0.2s ease-out;
+        }
+
+        @keyframes card-expand-anim {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(0.97);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* 卡片返回动画 */
+        .photo-card.card-return {
+            animation: card-return-anim 0.2s ease-out;
+        }
+
+        @keyframes card-return-anim {
+            0% {
+                transform: scale(0.97);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+            100% {
+                transform: scale(1);
+            }
         }
 
         /* 搜索统计 */
@@ -1664,7 +2597,7 @@
 
         .ai-provider-title {
             font-weight: 600;
-            color: #1e293b;
+            color: var(--text-primary);
             margin-bottom: 0.8rem;
             display: flex;
             align-items: center;
@@ -1679,39 +2612,50 @@
         .api-key-input {
             flex: 1;
             padding: 0.8rem 1rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
             outline: none;
             font-size: 0.9rem;
-            font-family: monospace;
+            font-family: var(--font-mono);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
         }
 
         .api-key-input:focus {
-            border-color: #667eea;
+            border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         .api-key-toggle {
             padding: 0.8rem;
-            background: #f1f5f9;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all var(--transition-fast);
         }
 
         .api-key-toggle:hover {
-            background: #e2e8f0;
+            background: var(--border-hover);
+        }
+
+        .api-key-toggle:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
         }
 
         .ai-provider-select {
             width: 100%;
             padding: 0.8rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
             outline: none;
             font-size: 0.9rem;
-            background: white;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: border-color var(--transition-fast);
             cursor: pointer;
         }
 
@@ -1806,8 +2750,9 @@
 </head>
 <body>
     <!-- 加载动画 -->
-    <div class="loader-wrapper" id="loader">
+    <div class="loader-wrapper" id="loader" role="status" aria-label="页面加载中">
         <div class="loader"></div>
+        <span class="loader-text">正在加载...</span>
     </div>
 
     <!-- 导航栏 -->
@@ -1823,16 +2768,19 @@
                 </div>
                 
                 <div class="nav-tools">
-                    <div class="favorites-nav-btn" onclick="showFavoritesPage()">
+                    <button class="dark-mode-toggle" onclick="toggleDarkMode()" aria-label="切换深色模式" title="切换深色模式">
+                        <span class="toggle-icon">🌙</span>
+                    </button>
+                    <div class="favorites-nav-btn" onclick="showFavoritesPage()" role="button" tabindex="0" aria-label="查看收藏">
                         <span class="favorites-icon">❤️</span>
                         <span class="favorites-text">收藏</span>
                         <span class="favorites-count-badge" id="navFavoritesCount">0</span>
                     </div>
-                    <button class="tool-btn" onclick="scrollToTop()">
+                    <button class="tool-btn" onclick="scrollToTop()" aria-label="返回顶部">
                         <span>⬆️</span>
                         <span class="tool-text">顶部</span>
                     </button>
-                    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+                    <button class="menu-toggle" onclick="toggleMenu()" aria-label="打开菜单">☰</button>
                 </div>
             </div>
             
@@ -1840,7 +2788,7 @@
                 <a onclick="showHome()" class="active">首页</a>
                 <a onclick="showFavoritesPage()">我的收藏</a>
                 <a onclick="showPopularPage()">热门景点</a>
-                <a onclick="showHiddenGemsPage()">小众秘境</a>
+
                 <a onclick="showPhotographyPage()">摄影推荐</a>
             </div>
         </div>
@@ -1848,23 +2796,56 @@
 
     <!-- 首页内容 -->
     <div id="homePage" class="page-container active">
-        <div class="search-section">
-            <div class="search-container">
-                <div class="search-box">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" class="search-input" id="searchInput" placeholder="搜索景点..." autocomplete="off">
-                    <button class="clear-button" onclick="clearSearch()">✕</button>
-                </div>
-                <div class="search-suggestions" id="searchSuggestions">
-                    <ul id="suggestionsList"></ul>
+        <!-- 轮播图 + 右侧内容区域 -->
+        <div class="hero-section">
+            <!-- 左侧轮播图 -->
+            <div class="hero-left">
+                <div class="carousel" id="homeCarousel">
+                    <div class="carousel-track" id="carouselTrack">
+                        <div class="carousel-slide">
+                            <div class="slide-bg"></div>
+                            <img src="轮播图/retouch_2026040316410597.jpg" alt="大三巴牌坊" loading="lazy" onload="this.classList.add('loaded')" onerror="this.parentElement.classList.add('image-error')">
+                            <div class="slide-overlay">
+                            </div>
+                        </div>
+                        <div class="carousel-slide">
+                            <div class="slide-bg"></div>
+                            <img src="轮播图/retouch_2026040316401427.jpg" alt="澳门威尼斯人" loading="lazy" onload="this.classList.add('loaded')" onerror="this.parentElement.classList.add('image-error')">
+                            <div class="slide-overlay">
+                            </div>
+                        </div>
+
+                        <div class="carousel-slide">
+                            <div class="slide-bg"></div>
+                            <img src="轮播图/retouch_2026040316452526.jpg" alt="澳门夜景" loading="lazy" onload="this.classList.add('loaded')" onerror="this.parentElement.classList.add('image-error')">
+                            <div class="slide-overlay">
+                            </div>
+                        </div>
+                        <div class="carousel-slide">
+                            <div class="slide-bg"></div>
+                            <img src="轮播图/retouch_2026040316480842.jpg" alt="澳门风光" loading="lazy" onload="this.classList.add('loaded')" onerror="this.parentElement.classList.add('image-error')">
+                            <div class="slide-overlay">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-arrows">
+                        <button class="carousel-arrow left-arrow" onclick="prevSlide()" aria-label="上一张">&#10094;</button>
+                        <button class="carousel-arrow right-arrow" onclick="nextSlide()" aria-label="下一张">&#10095;</button>
+                    </div>
+                    <div class="carousel-dots" id="carouselDots"></div>
                 </div>
             </div>
-            <div class="hot-searches">
-                <span class="hot-tag" onclick="quickSearch('大三巴')">大三巴牌坊</span>
-                <span class="hot-tag" onclick="quickSearch('塔')">澳门塔</span>
-                <span class="hot-tag" onclick="quickSearch('路环')">路环渔村</span>
-                <span class="hot-tag" onclick="quickSearch('博物馆')">博物馆</span>
+        </div>
+        
+        <!-- 轮播图下方搜索栏 -->
+        <div class="carousel-search-wrapper">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" id="mainSearchInput" placeholder="搜索景点、酒店、美食..." oninput="handleMainSearch(this.value)" onkeypress="if(event.key==='Enter')performMainSearch()">
+                <button class="clear-button" onclick="clearMainSearch()" style="display: none;" id="clearMainSearchBtn">✕</button>
+                <button class="search-btn" onclick="performMainSearch()">搜索</button>
             </div>
+            <div class="search-suggestions" id="mainSearchSuggestions"></div>
         </div>
 
         <div class="filter-section">
@@ -1915,25 +2896,19 @@
         </div>
     </div>
 
-    <!-- 小众秘境页面 -->
-    <div id="hiddenGemsPage" class="page-container">
-        <div class="container">
-            <h2 style="text-align: center; margin-bottom: 1.5rem; color: #1e293b;">✨ 小众秘境</h2>
-            <div class="grid" id="hiddenGemsGrid"></div>
-        </div>
-    </div>
-
     <!-- 摄影推荐页面 -->
     <div id="photographyPage" class="page-container">
         <div class="container">
             <h2 style="text-align: center; margin-bottom: 1.5rem; color: #1e293b;">📸 摄影推荐</h2>
             <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 1.5rem;">
                 <span class="photo-category active" onclick="filterPhotos('all')">全部</span>
-                <span class="photo-category" onclick="filterPhotos('sunset')">日落</span>
                 <span class="photo-category" onclick="filterPhotos('night')">夜景</span>
+                <span class="photo-category" onclick="filterPhotos('food')">美食</span>
+                <span class="photo-category" onclick="filterPhotos('street')">人文街拍</span>
+                <span class="photo-category" onclick="filterPhotos('sunset')">日落</span>
                 <span class="photo-category" onclick="filterPhotos('architecture')">建筑</span>
-                <span class="photo-category" onclick="filterPhotos('street')">街拍</span>
                 <span class="photo-category" onclick="filterPhotos('landscape')">风光</span>
+                <span class="photo-category" onclick="filterPhotos('offbeat')">小众</span>
             </div>
             <div style="text-align: center; margin-bottom: 1rem;">
                 <button class="explore-btn" onclick="showPhotoFavorites()">我的摄影收藏</button>
@@ -2036,6 +3011,10 @@
                     <h2 class="modal-quick-title" id="modalQuickTitle"></h2>
                     <div class="modal-quick-tags" id="modalQuickTags"></div>
                 </div>
+                <button class="modal-favorite-btn" id="modalFavoriteBtn" onclick="event.stopPropagation(); toggleModalFavorite()">
+                    <span id="modalFavoriteIcon">🤍</span>
+                    <span id="modalFavoriteText">收藏</span>
+                </button>
             </div>
             <div class="modal-back">
                 <div class="modal-body">
@@ -2050,113 +3029,281 @@
     <button id="backToTop" onclick="scrollToTop()">↑</button>
 
     <script>
+        // 轮播图功能
+        let currentSlide = 0;
+        const totalSlides = 4;
+        let carouselInterval;
+        let isPaused = false;
+
+        // 图片懒加载
+        function lazyLoadImages() {
+            const images = document.querySelectorAll('img[data-src]');
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src;
+                        img.removeAttribute('data-src');
+                        observer.unobserve(img);
+                    }
+                });
+            });
+
+            images.forEach(img => imageObserver.observe(img));
+        }
+
+        // 深色模式切换
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark);
+            updateDarkModeIcon();
+        }
+
+        function updateDarkModeIcon() {
+            const isDark = document.body.classList.contains('dark-mode');
+            const icon = document.querySelector('.dark-mode-toggle .toggle-icon');
+            if (icon) {
+                icon.textContent = isDark ? '☀️' : '🌙';
+            }
+        }
+
+        function initDarkMode() {
+            const savedMode = localStorage.getItem('darkMode');
+            if (savedMode === 'true' || 
+                (savedMode === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.body.classList.add('dark-mode');
+            }
+            updateDarkModeIcon();
+        }
+
+        // 键盘快捷键
+        function handleKeyboardShortcuts(e) {
+            if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(e.target.tagName)) {
+                e.preventDefault();
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput) {
+                    searchInput.focus();
+                }
+            }
+            if (e.key === 'Escape') {
+                closeModal();
+                closeAISettings();
+                toggleAIChat(true);
+            }
+            // 轮播图键盘控制
+            if (e.key === 'ArrowLeft') {
+                const carousel = document.getElementById('homeCarousel');
+                if (carousel && carousel.classList.contains('active') !== false) {
+                    e.preventDefault();
+                    prevSlide();
+                }
+            }
+            if (e.key === 'ArrowRight') {
+                const carousel = document.getElementById('homeCarousel');
+                if (carousel && carousel.classList.contains('active') !== false) {
+                    e.preventDefault();
+                    nextSlide();
+                }
+            }
+        }
+
+        // 轮播图功能
+        function initCarousel() {
+            const track = document.getElementById('carouselTrack');
+            const dotsContainer = document.getElementById('carouselDots');
+            
+            if (!track || !dotsContainer) return;
+
+            // 创建导航点
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('button');
+                dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+                dot.onclick = () => goToSlide(i);
+                dot.setAttribute('aria-label', `跳转到第 ${i + 1} 张幻灯片`);
+                dotsContainer.appendChild(dot);
+            }
+
+            // 自动播放
+            startAutoPlay();
+        }
+
+        function goToSlide(index) {
+            const track = document.getElementById('carouselTrack');
+            const slides = document.querySelectorAll('.carousel-slide');
+            
+            if (!track || slides.length === 0) return;
+            
+            // 添加切换动画类
+            slides.forEach(slide => slide.classList.add('transitioning'));
+            
+            currentSlide = index;
+            if (track) {
+                track.style.transform = `translateX(-${currentSlide * 100}%)`;
+            }
+            
+            // 更新导航点
+            const dots = document.querySelectorAll('.carousel-dot');
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentSlide);
+                dot.setAttribute('aria-current', i === currentSlide);
+            });
+            
+            // 移除动画类
+            setTimeout(() => {
+                slides.forEach(slide => slide.classList.remove('transitioning'));
+            }, 500);
+        }
+
+        function nextSlide() {
+            if (isPaused) return;
+            currentSlide = (currentSlide + 1) % totalSlides;
+            goToSlide(currentSlide);
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            goToSlide(currentSlide);
+        }
+
+        function startAutoPlay() {
+            carouselInterval = setInterval(nextSlide, 4000);
+        }
+
+        function stopAutoPlay() {
+            clearInterval(carouselInterval);
+        }
+
+        // 鼠标悬停暂停
+        document.addEventListener('DOMContentLoaded', () => {
+            const carousel = document.getElementById('homeCarousel');
+            if (carousel) {
+                initCarousel();
+                carousel.addEventListener('mouseenter', () => { isPaused = true; });
+                carousel.addEventListener('mouseleave', () => { isPaused = false; });
+                
+                // 触摸滑动支持
+                let touchStartX = 0;
+                let touchEndX = 0;
+                
+                carousel.addEventListener('touchstart', e => {
+                    touchStartX = e.changedTouches[0].screenX;
+                }, { passive: true });
+                
+                carousel.addEventListener('touchend', e => {
+                    touchEndX = e.changedTouches[0].screenX;
+                    if (touchStartX - touchEndX > 50) {
+                        nextSlide();
+                    } else if (touchEndX - touchStartX > 50) {
+                        prevSlide();
+                    }
+                }, { passive: true });
+            }
+            
+            // 初始化深色模式
+            initDarkMode();
+            
+            // 初始化图片懒加载
+            lazyLoadImages();
+            
+            // 添加键盘快捷键监听
+            document.addEventListener('keydown', handleKeyboardShortcuts);
+            
+            // 页面可见性变化处理
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    isPaused = true;
+                } else {
+                    isPaused = false;
+                }
+            });
+        });
+
         // 景点数据
         const sites = [
             {
                 id: 1,
-                name: '大三巴牌坊',
-                nameEn: 'Ruins of St. Paul\'s',
-                desc: '澳门最具代表性的地标建筑,是世界文化遗产。这座哥特式教堂的前壁保存完好,见证了澳门400多年的历史变迁。',
+                name: '妈阁庙',
+                nameEn: 'A-Ma Temple',
+                desc: '澳门最古老的庙宇,建于明朝1488年,供奉妈祖天后。这座充满历史底蕴的庙宇是澳门世界文化遗产的重要组成部分,见证了澳门500多年的历史变迁。',
                 location: '澳门半岛',
                 tags: ['世界遗产', '文化景点'],
                 rating: 4.9,
-                visits: '128万',
+                visits: '86万',
                 bestTime: '8:00-18:00',
-                image: 'https://source.unsplash.com/400x300/?church,ruins'
+                image: 'https://picsum.photos/seed/temple/400/300'
             },
             {
                 id: 2,
-                name: '澳门旅游塔',
-                nameEn: 'Macau Tower',
-                desc: '南中国海畔的标志性建筑,高338米,从塔顶可俯瞰整个澳门半岛和珠海市区的壮丽景色。',
-                location: '澳门半岛',
-                tags: ['娱乐休闲', '观景'],
-                rating: 4.7,
-                visits: '95万',
-                bestTime: '11:00-21:00',
-                image: 'https://source.unsplash.com/400x300/?tower,view'
-            },
-            {
-                id: 3,
-                name: '龙环葡韵',
-                nameEn: 'Taipa Houses-Museum',
-                desc: '氹仔海边的薄荷绿色葡式建筑群,共五栋房屋,展现了20世纪初澳门的葡萄牙民居风格。',
-                location: '氹仔',
-                tags: ['世界遗产', '文化景点'],
-                rating: 4.8,
-                visits: '62万',
-                bestTime: '9:00-17:00',
-                image: 'https://source.unsplash.com/400x300/?portuguese,architecture'
-            },
-            {
-                id: 4,
-                name: '路环渔村',
-                nameEn: 'Coloane Village',
-                desc: '澳门最宁静的地方之一,彩色的小屋、古老的码头和传统的海鲜餐厅,让人仿佛置身于时光隧道。',
-                location: '路环岛',
-                tags: ['自然风光', '文化景点'],
-                rating: 4.9,
-                visits: '45万',
-                bestTime: '10:00-17:00',
-                image: 'https://source.unsplash.com/400x300/?village,coastal'
-            },
-            {
-                id: 5,
-                name: '黑沙滩',
+                name: '黑沙湾',
                 nameEn: 'Hac Sa Beach',
-                desc: '澳门最独特的海滩,沙子呈黑色,是天然火山熔岩冷却形成的。海滩边有各种水上运动设施。',
+                desc: '澳门最独特的海滩,沙子呈黑色,是天然火山熔岩冷却形成的奇观。海滩长约1.5公里,环境清幽,远离城市喧嚣,是享受阳光海浪的理想之地。',
                 location: '路环岛',
                 tags: ['自然风光', '娱乐休闲'],
                 rating: 4.6,
                 visits: '38万',
                 bestTime: '6:00-19:00',
-                image: 'https://source.unsplash.com/400x300/?beach,black'
+                image: 'https://picsum.photos/seed/beach/400/300'
             },
             {
-                id: 6,
-                name: '议事亭前地',
-                nameEn: 'Senado Square',
-                desc: '澳门市中心的核心区域,周围有市政厅大楼、仁慈堂大楼等葡式建筑,地面铺设着黑白相间的波浪形碎石。',
+                id: 3,
+                name: '澳门炮台',
+                nameEn: 'Mount Fortress',
+                desc: '建于1622年的澳门炮台,曾是澳门重要的军事防御设施。炮台位于大炮台山上,视野开阔,可俯瞰澳门全景,现已成为澳门博物馆的一部分。',
                 location: '澳门半岛',
                 tags: ['世界遗产', '文化景点'],
-                rating: 4.8,
-                visits: '86万',
-                bestTime: '8:00-22:00',
-                image: 'https://source.unsplash.com/400x300/?square,architecture'
-            },
-            {
-                id: 7,
-                name: '澳门博物馆',
-                nameEn: 'Macau Museum',
-                desc: '展示了澳门400多年来的历史文化变迁,馆藏丰富,包括书画、陶瓷、钱币等珍贵文物。',
-                location: '澳门半岛',
-                tags: ['文化景点', '世界遗产'],
-                rating: 4.5,
-                visits: '28万',
-                bestTime: '10:00-18:00',
-                image: 'https://source.unsplash.com/400x300/?museum'
-            },
-            {
-                id: 8,
-                name: '主教山小堂',
-                nameEn: 'Penha Church',
-                desc: '位于澳门半岛西南部的主教山上,这座小教堂建于1622年,是欣赏澳门日落和夜景的绝佳地点。',
-                location: '澳门半岛',
-                tags: ['文化景点', '观景'],
                 rating: 4.7,
-                visits: '32万',
-                bestTime: '6:00-20:00',
-                image: 'https://source.unsplash.com/400x300/?church,hill'
+                visits: '52万',
+                bestTime: '10:00-18:00',
+                image: 'https://picsum.photos/seed/fort/400/300'
+            },
+            {
+                id: 4,
+                name: '大三巴牌坊',
+                nameEn: 'Ruins of St. Paul\'s',
+                desc: '澳门最具代表性的地标建筑,是世界文化遗产。这座哥特式教堂的前壁保存完好,高达25米,雕刻精美,见证了澳门400多年的历史变迁。',
+                location: '澳门半岛',
+                tags: ['世界遗产', '文化景点'],
+                rating: 4.9,
+                visits: '128万',
+                bestTime: '8:00-18:00',
+                image: 'https://picsum.photos/seed/church/400/300'
             }
         ];
 
         // 摄影推荐数据
         const photoSites = [
-            { id: 101, name: '主教山日落', category: 'sunset', desc: '黄昏时分,主教山小堂是拍摄澳门日落的绝佳位置。', bestTime: '17:00-19:00', equipment: '三脚架、广角镜头', tips: '提前30分钟到达', image: 'https://source.unsplash.com/400x300/?sunset,church', tags: ['日落', '观景'], location: '澳门半岛' },
-            { id: 102, name: '南湾夜景', category: 'night', desc: '南湾湖畔的夜晚灯火璀璨,西湾大桥的倒影与城市灯光交相辉映。', bestTime: '19:00-22:00', equipment: '三脚架、长焦镜头', tips: '使用慢门拍摄车流', image: 'https://source.unsplash.com/400x300/?night,city', tags: ['夜景', '城市'], location: '澳门半岛' },
-            { id: 103, name: '大三巴光影', category: 'architecture', desc: '清晨或黄昏时分,光线透过大三巴牌坊,营造出戏剧性的光影效果。', bestTime: '6:00-8:00 / 17:00-19:00', equipment: '广角镜头', tips: '避免正午顶光', image: 'https://source.unsplash.com/400x300/?architecture,ruins', tags: ['建筑', '世界遗产'], location: '澳门半岛' },
-            { id: 104, name: '路环街拍', category: 'street', desc: '路环渔村的彩色小屋和宁静街巷,是拍摄澳门人文风情的绝佳场所。', bestTime: '10:00-16:00', equipment: '35mm/50mm定焦', tips: '保持安静', image: 'https://source.unsplash.com/400x300/?street,village', tags: ['街拍', '人文'], location: '路环岛' },
-            { id: 105, name: '黑沙滩海景', category: 'landscape', desc: '独特的黑色沙滩与蓝色海水形成鲜明对比,是风景摄影的理想地点。', bestTime: '15:00-18:00', equipment: '广角镜头', tips: '低角度拍摄', image: 'https://source.unsplash.com/400x300/?beach,black', tags: ['风景', '自然'], location: '路环岛' }
+            { id: 101, name: '主教山日落', category: 'sunset', desc: '黄昏时分,主教山小堂是拍摄澳门日落的绝佳位置。夕阳将天空染成金橙色,与古朴的教堂建筑形成绝美对比。', bestTime: '17:00-19:00', equipment: '三脚架、广角镜头', tips: '提前30分钟到达,使用减光镜', image: '轮播图/retouch_2026040316401427.jpg', tags: ['日落', '观景'], location: '澳门半岛' },
+            { id: 102, name: '南湾夜景', category: 'night', desc: '南湾湖畔的夜晚灯火璀璨,西湾大桥的倒影与城市灯光交相辉映。', bestTime: '19:00-22:00', equipment: '三脚架、长焦镜头', tips: '使用慢门拍摄车流', image: '海报/IMG_20260403_170631.png', tags: ['夜景', '城市'], location: '澳门半岛' },
+            { id: 103, name: '大三巴光影', category: 'architecture', desc: '清晨或黄昏时分,光线透过大三巴牌坊,营造出戏剧性的光影效果。', bestTime: '6:00-8:00 / 17:00-19:00', equipment: '广角镜头', tips: '避免正午顶光', image: '轮播图/retouch_2026040316410597.jpg', tags: ['建筑', '世界遗产'], location: '澳门半岛' },
+            { id: 104, name: '路环街拍', category: 'street', desc: '路环渔村的彩色小屋和宁静街巷,是拍摄澳门人文风情的绝佳场所。', bestTime: '10:00-16:00', equipment: '35mm/50mm定焦', tips: '保持安静', image: '小众/img-1768532517723874f1526d4896d7ae311af57764ac191.jpg', tags: ['街拍', '人文'], location: '路环岛' },
+            { id: 105, name: '黑沙滩海景', category: 'landscape', desc: '独特的黑色沙滩与蓝色海水形成鲜明对比,是风景摄影的理想地点。', bestTime: '15:00-18:00', equipment: '广角镜头', tips: '低角度拍摄', image: '轮播图/retouch_2026040316452526.jpg', tags: ['风景', '自然'], location: '路环岛' },
+            { id: 201, name: '渔村晨曦', category: 'street', desc: '清晨的路环渔村,阳光穿透彩色房屋的缝隙,在青石板路上投下斑驳的光影。古老的渔船静静停靠在码头,诉说着这座小渔村的历史与变迁。', bestTime: '6:30-8:30', equipment: '定焦镜头', tips: '使用柔光板减少阴影', image: '小众/img-17687140816758dec6c64cd6ed0cbe4292a5ecee7163b.jpg', tags: ['街拍', '人文', '清晨'], location: '路环岛', rating: 4.9 },
+            { id: 202, name: '午后小巷', category: 'street', desc: '午后的阳光斜照进狭窄的葡式小巷,斑驳的墙面与鲜艳的花盆相映成趣。每一道光影都是时光的印记,每一扇窗户都是一个故事。', bestTime: '14:00-16:00', equipment: '35mm定焦', tips: '寻找有趣的光影对比', image: '小众/img-176871408414290613f9f1c40652c2719d7ad73fa8786.jpg', tags: ['街拍', '光影', '午后'], location: '澳门半岛', rating: 4.7 },
+            { id: 203, name: '石阶光影', category: 'architecture', desc: '古老的石阶在午后阳光下呈现出温暖的色调,每一级台阶都承载着岁月的痕迹。这是澳门独有的葡式风情与现代都市的完美交汇。', bestTime: '10:00-12:00', equipment: '标准镜头', tips: '低角度突出空间感', image: '小众/img-176871408803158cfecb67ccd3e9381f05d9b34d99146.jpg', tags: ['建筑', '光影', '葡式'], location: '澳门半岛', rating: 4.8 },
+            { id: 204, name: '海岸黄昏', category: 'sunset', desc: '黄昏时分的海岸线被染成金红色,远处的灯塔在夕阳中闪烁。平静的海面如同一面镜子,倒映着天空的色彩变幻,是一幅天然的水彩画。', bestTime: '17:30-19:00', equipment: '广角镜头、三脚架', tips: '使用减光镜拍摄丝滑水面', image: '轮播图/retouch_2026040316480842.jpg', tags: ['日落', '海景', '黄昏'], location: '路环岛', rating: 4.9 },
+            { id: 205, name: '老街记忆', category: 'street', desc: '斑驳的墙壁、褪色的招牌、晾晒的衣服,这些都是澳门老街最真实的模样。镜头记录下的不仅是画面,更是一段段被时光封存的城市记忆。', bestTime: '9:00-11:00', equipment: '长焦镜头', tips: '使用中灰渐变滤镜平衡曝光', image: '小众/img-1768714090023e10b984fe8cee5b6c089ec23bf0e45df.jpg', tags: ['街拍', '人文', '怀旧'], location: '澳门半岛', rating: 4.6 },
+            { id: 206, name: '窗台故事', category: 'architecture', desc: '每一扇窗户都是一幅画框,窗外是澳门独特的天际线,窗内是居民生活的点滴。阳光透过窗帘洒入,营造出温馨而神秘的氛围。', bestTime: '11:00-14:00', equipment: '70-200mm长焦', tips: '注意安全快门速度', image: '小众/img-176871409190489537c52c5802eb7be78c1c2f162ce0c.jpg', tags: ['建筑', '人文', '窗景'], location: '澳门半岛', rating: 4.7 },
+            // 夜景摄影
+            { id: 301, name: '威尼斯人夜景', category: 'night', desc: '夜幕降临后的威尼斯人度假村灯火通明,人工运河在璀璨灯光下波光粼粼,仿佛置身于意大利水城。', bestTime: '20:00-23:00', equipment: '三脚架、广角镜头', tips: '室内外温差大,注意镜头起雾', image: '海报/IMG_20260403_170719.png', tags: ['夜景', '奢华', '地标'], location: '路氹城', rating: 4.9 },
+            { id: 302, name: '大三巴星空', category: 'night', desc: '夜深人静时的大三巴牌坊,星空作为背景,古朴的石雕在月光下更显沧桑与神秘。', bestTime: '21:00-24:00', equipment: '三脚架、中焦镜头', tips: '使用高感光度或堆栈降噪', image: '海报/IMG_20260403_170814.png', tags: ['夜景', '世界遗产', '星空'], location: '澳门半岛', rating: 4.8 },
+            { id: 303, name: '西湾大桥', category: 'night', desc: '西湾大桥的斜拉索在夜色中勾勒出优美的弧线,桥上车流形成流动的光轨,与水面倒影相映成趣。', bestTime: '19:30-22:00', equipment: '三脚架、减光镜', tips: '使用B门或长曝光捕捉车灯轨迹', image: '海报/IMG_20260403_170911.png', tags: ['夜景', '建筑', '车轨'], location: '澳门半岛', rating: 4.7 },
+            { id: 304, name: '新葡京光影', category: 'night', desc: '新葡京酒店的金色莲花造型在夜色中熠熠生辉,独特的建筑轮廓成为澳门夜景的标志性画面。', bestTime: '20:00-23:00', equipment: '三脚架、长焦镜头', tips: '利用玻璃幕墙反射增加层次', image: '海报/IMG_20260403_170631.png', tags: ['夜景', '地标', '奢华'], location: '澳门半岛', rating: 4.9 },
+            { id: 305, name: '妈阁庙夜色', category: 'night', desc: '妈阁庙的红墙绿瓦在夜色灯光的映衬下,更显东方神韵与传统之美,是拍摄澳门中式夜景的绝佳地点。', bestTime: '19:00-21:30', equipment: '三脚架、标准镜头', tips: '注意白平衡,保留灯光暖色', image: '海报/IMG_20260403_170719.png', tags: ['夜景', '传统文化', '寺庙'], location: '澳门半岛', rating: 4.6 },
+            // 美食摄影
+            { id: 401, name: '葡式蛋挞', category: 'food', desc: '金黄酥脆的蛋挞皮包裹着嫩滑的蛋奶馅,刚出炉时冒着热气,是澳门最具代表性的美食之一。', bestTime: '10:00-12:00', equipment: '微距镜头', tips: '侧光拍摄突出酥皮层次', image: '轮播图/retouch_2026040316401427.jpg', tags: ['美食', '甜点', '葡式'], location: '路环岛', rating: 5.0 },
+            { id: 402, name: '水蟹粥', category: 'food', desc: '鲜甜的水蟹与绵密的米粥完美融合,每一口都是海洋的鲜美与温润,是澳门独有的特色美食。', bestTime: '12:00-14:00', equipment: '标准镜头', tips: '用蒸汽营造朦胧氛围', image: '轮播图/retouch_2026040316410597.jpg', tags: ['美食', '海鲜', '粥品'], location: '澳门半岛', rating: 4.8 },
+            { id: 403, name: '猪扒包', category: 'food', desc: '酥脆的面包夹着厚实的猪扒,简单的组合却蕴含着澳门独有的饮食文化与市井风情。', bestTime: '11:00-13:00', equipment: '定焦镜头', tips: '从上往下拍展示层次', image: '小众/img-1768532517723874f1526d4896d7ae311af57764ac191.jpg', tags: ['美食', '小吃', '地道'], location: '路环岛', rating: 4.7 },
+            { id: 404, name: '双皮奶', category: 'food', desc: '细腻嫩滑的双皮奶入口即化,奶香浓郁而不腻,是澳门传统甜品的经典之作。', bestTime: '14:00-16:00', equipment: '微距镜头', tips: '近摄展示细腻质感', image: '小众/img-17687140816758dec6c64cd6ed0cbe4292a5ecee7163b.jpg', tags: ['美食', '甜品', '传统'], location: '澳门半岛', rating: 4.6 },
+            { id: 405, name: '杏仁饼', category: 'food', desc: '酥香的杏仁饼是澳门最受欢迎的伴手礼,每一块都承载着澳门老饼家的传统工艺与匠心。', bestTime: '10:00-15:00', equipment: '微距镜头', tips: '使用散景突出主体', image: '小众/img-176871408414290613f9f1c40652c2719d7ad73fa8786.jpg', tags: ['美食', '糕点', '伴手礼'], location: '澳门半岛', rating: 4.5 },
+            { id: 406, name: '竹升面', category: 'food', desc: '细细的竹升面配以鲜美的汤底,简单的食材却呈现出澳门独有的风味,是早餐的首选。', bestTime: '7:00-9:00', equipment: '标准镜头', tips: '俯拍展示面条质感', image: '小众/img-176871408803158cfecb67ccd3e9381f05d9b34d99146.jpg', tags: ['美食', '面食', '早餐'], location: '澳门半岛', rating: 4.7 },
+            // 人文街拍
+            { id: 501, name: '福隆新街', category: 'street', desc: '红彤彤的灯笼挂满老街两旁,青砖灰瓦间诉说着澳门的往昔岁月,是人文摄影的绝佳取景地。', bestTime: '16:00-18:00', equipment: '35mm定焦', tips: '等待行人增添动感', image: '小众/img-1768714090023e10b984fe8cee5b6c089ec23bf0e45df.jpg', tags: ['人文街拍', '老街', '红灯笼'], location: '澳门半岛', rating: 4.9 },
+            { id: 502, name: '恋爱巷', category: 'street', desc: '粉色调的葡式建筑与斑驳的墙壁相映成趣,这条充满浪漫气息的小巷是文艺青年必打卡之地。', bestTime: '10:00-12:00', equipment: '定焦镜头', tips: '利用墙面作为背景', image: '小众/img-176871409190489537c52c5802eb7be78c1c2f162ce0c.jpg', tags: ['人文街拍', '文艺', '浪漫'], location: '澳门半岛', rating: 4.8 },
+            { id: 503, name: '关前街', category: 'street', desc: '老旧的店铺、褪色的招牌,这里是澳门最市井的街道,每一帧都是生活的真实写照。', bestTime: '9:00-11:00', equipment: '35mm/50mm', tips: '捕捉当地人生活瞬间', image: '小众/img-1768532517723874f1526d4896d7ae311af57764ac191.jpg', tags: ['人文街拍', '市井', '怀旧'], location: '澳门半岛', rating: 4.7 },
+            { id: 504, name: '疯堂斜巷', category: 'street', desc: '葡式碎石路面与明黄色的建筑外墙,在阳光下形成强烈的色彩对比,是澳门口碑最好的拍照打卡点。', bestTime: '14:00-16:00', equipment: '标准镜头', tips: '低角度拍摄增强空间感', image: '小众/img-17687140816758dec6c64cd6ed0cbe4292a5ecee7163b.jpg', tags: ['人文街拍', '葡式', '色彩'], location: '澳门半岛', rating: 4.9 },
+            { id: 505, name: '三盏灯', category: 'street', desc: '这里是澳门最具东南亚风情的角落,越南美食、缅甸寺庙、葡式建筑在此交融,是文化摄影的宝地。', bestTime: '11:00-13:00', equipment: '多种镜头', tips: '多民族文化交汇值得深入探索', image: '小众/img-176871408414290613f9f1c40652c2719d7ad73fa8786.jpg', tags: ['人文街拍', '多元文化', '美食'], location: '澳门半岛', rating: 4.8 },
+            { id: 506, name: '十月初五街', category: 'street', desc: '以葡萄牙国庆日命名的老街,保留着最原汁原味的澳门风情,老字号店铺见证着澳门的变迁。', bestTime: '8:00-10:00', equipment: '定焦镜头', tips: '清晨光线柔和适合街拍', image: '小众/img-176871408803158cfecb67ccd3e9381f05d9b34d99146.jpg', tags: ['人文街拍', '老街', '历史'], location: '澳门半岛', rating: 4.6 }
         ];
 
         let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
@@ -2197,14 +3344,6 @@
             renderPopular();
         }
 
-        // 显示小众秘境
-        function showHiddenGemsPage() {
-            document.querySelectorAll('.page-container').forEach(page => page.classList.remove('active'));
-            document.getElementById('hiddenGemsPage').classList.add('active');
-            document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active'));
-            renderHiddenGems();
-        }
-
         // 显示摄影推荐
         function showPhotographyPage() {
             document.querySelectorAll('.page-container').forEach(page => page.classList.remove('active'));
@@ -2232,23 +3371,25 @@
                     <div class="card-inner">
                         <div class="card-panorama">
                             <img src="${site.image}" alt="${site.name}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect width=\'400\' height=\'300\' fill=\'%232a5298\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' font-size=\'18\' fill=\'%23fff\' text-anchor=\'middle\'%3E${site.name}%3C/text%3E%3C/svg%3E';">
-                            <div class="card-indicator card-indicator-top">⬇️ 滑动查看详情</div>
+                            <div class="card-indicator card-indicator-top">⬇️ 点击查看详情</div>
                             <button class="favorite-btn ${favorites.includes(site.id) ? 'active' : ''}" onclick="toggleFavorite(${site.id}, event)" style="position:absolute;top:10px;right:10px;z-index:5;">${favorites.includes(site.id) ? '❤️' : '🤍'}</button>
                         </div>
                         <div class="card-info">
-                            <div class="card-info-title">${site.name}</div>
-                            <div class="card-info-desc">${site.desc}</div>
-                            <div class="card-info-tags">
-                                ${site.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-                            </div>
-                            <div class="card-info-footer">
-                                <div class="card-info-meta">
-                                    <span>📍 ${site.location}</span>
-                                    <span>⏰ ${site.bestTime}</span>
-                                    <span>👥 ${site.visits}</span>
+                            <div class="card-info-content">
+                                <div class="card-info-title">${site.name}</div>
+                                <div class="card-info-desc">${site.desc}</div>
+                                <div class="card-info-tags">
+                                    ${site.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
                                 </div>
-                                <div class="card-info-rating">
-                                    <span>⭐ ${site.rating}</span>
+                                <div class="card-info-footer">
+                                    <div class="card-info-meta">
+                                        <span>📍 ${site.location}</span>
+                                        <span>⏰ ${site.bestTime}</span>
+                                        <span>👥 ${site.visits}</span>
+                                    </div>
+                                    <div class="card-info-rating">
+                                        <span>⭐ ${site.rating}</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="card-indicator card-indicator-bottom">⬆️ 返回图片</div>
@@ -2275,23 +3416,25 @@
                     <div class="card-inner">
                         <div class="card-panorama">
                             <img src="${site.image}" alt="${site.name}" loading="lazy">
-                            <div class="card-indicator card-indicator-top">⬇️ 滑动查看详情</div>
+                            <div class="card-indicator card-indicator-top">⬇️ 点击查看详情</div>
                             <button class="favorite-btn active" onclick="toggleFavorite(${site.id}, event)" style="position:absolute;top:10px;right:10px;z-index:5;">❤️</button>
                         </div>
                         <div class="card-info">
-                            <div class="card-info-title">${site.name}</div>
-                            <div class="card-info-desc">${site.desc}</div>
-                            <div class="card-info-tags">
-                                ${site.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-                            </div>
-                            <div class="card-info-footer">
-                                <div class="card-info-meta">
-                                    <span>📍 ${site.location}</span>
-                                    <span>⏰ ${site.bestTime}</span>
-                                    <span>👥 ${site.visits}</span>
+                            <div class="card-info-content">
+                                <div class="card-info-title">${site.name}</div>
+                                <div class="card-info-desc">${site.desc}</div>
+                                <div class="card-info-tags">
+                                    ${site.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
                                 </div>
-                                <div class="card-info-rating">
-                                    <span>⭐ ${site.rating}</span>
+                                <div class="card-info-footer">
+                                    <div class="card-info-meta">
+                                        <span>📍 ${site.location}</span>
+                                        <span>⏰ ${site.bestTime}</span>
+                                        <span>👥 ${site.visits}</span>
+                                    </div>
+                                    <div class="card-info-rating">
+                                        <span>⭐ ${site.rating}</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="card-indicator card-indicator-bottom">⬆️ 返回图片</div>
@@ -2309,56 +3452,24 @@
                     <div class="card-inner">
                         <div class="card-panorama">
                             <img src="${site.image}" alt="${site.name}" loading="lazy">
-                            <div class="card-indicator card-indicator-top">⬇️ 滑动查看详情</div>
+                            <div class="card-indicator card-indicator-top">⬇️ 点击查看详情</div>
                             <button class="favorite-btn ${favorites.includes(site.id) ? 'active' : ''}" onclick="toggleFavorite(${site.id}, event)" style="position:absolute;top:10px;right:10px;z-index:5;">${favorites.includes(site.id) ? '❤️' : '🤍'}</button>
                         </div>
                         <div class="card-info">
-                            <div class="card-info-title">${site.name}</div>
-                            <div class="card-info-desc">${site.desc}</div>
-                            <div class="card-info-tags">
-                                ${site.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-                            </div>
-                            <div class="card-info-footer">
-                                <div class="card-info-meta">
-                                    <span>📍 ${site.location}</span>
-                                    <span>👥 ${site.visits}次</span>
+                            <div class="card-info-content">
+                                <div class="card-info-title">${site.name}</div>
+                                <div class="card-info-desc">${site.desc}</div>
+                                <div class="card-info-tags">
+                                    ${site.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
                                 </div>
-                                <div class="card-info-rating">
-                                    <span>⭐ ${site.rating}</span>
-                                </div>
-                            </div>
-                            <div class="card-indicator card-indicator-bottom">⬆️ 返回图片</div>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // 渲染小众秘境
-        function renderHiddenGems() {
-            const hiddenGems = sites.filter(site => site.tags.includes('自然风光') && site.tags.includes('文化景点'));
-            document.getElementById('hiddenGemsGrid').innerHTML = hiddenGems.map(site => `
-                <div class="card" data-id="${site.id}" onclick="handleCardClick(event, ${site.id})">
-                    <div class="card-inner">
-                        <div class="card-panorama">
-                            <img src="${site.image}" alt="${site.name}" loading="lazy">
-                            <div class="card-indicator card-indicator-top">⬇️ 滑动查看详情</div>
-                            <button class="favorite-btn ${favorites.includes(site.id) ? 'active' : ''}" onclick="toggleFavorite(${site.id}, event)" style="position:absolute;top:10px;right:10px;z-index:5;">${favorites.includes(site.id) ? '❤️' : '🤍'}</button>
-                        </div>
-                        <div class="card-info">
-                            <div class="card-info-title">${site.name}</div>
-                            <div class="card-info-desc">${site.desc}</div>
-                            <div class="card-info-tags">
-                                ${site.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-                            </div>
-                            <div class="card-info-footer">
-                                <div class="card-info-meta">
-                                    <span>📍 ${site.location}</span>
-                                    <span>⏰ ${site.bestTime}</span>
-                                    <span>👥 ${site.visits}</span>
-                                </div>
-                                <div class="card-info-rating">
-                                    <span>⭐ ${site.rating}</span>
+                                <div class="card-info-footer">
+                                    <div class="card-info-meta">
+                                        <span>📍 ${site.location}</span>
+                                        <span>👥 ${site.visits}次</span>
+                                    </div>
+                                    <div class="card-info-rating">
+                                        <span>⭐ ${site.rating}</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="card-indicator card-indicator-bottom">⬆️ 返回图片</div>
@@ -2403,7 +3514,7 @@
                                 <img class="photo-card-img" src="${site.image}" alt="${site.name}" loading="lazy">
                                 <button class="photo-favorite-btn ${photoFavorites.includes(site.id) ? 'active' : ''}" onclick="togglePhotoFavorite(${site.id}, event)">${photoFavorites.includes(site.id) ? '❤️' : '🤍'}</button>
                             </div>
-                            <div class="card-indicator card-indicator-top">⬇️ 滑动查看详情</div>
+                            <div class="card-indicator card-indicator-top">⬇️ 点击查看详情</div>
                         </div>
                         <div class="photo-card-info">
                             <div class="photo-card-info-title">${site.name}</div>
@@ -2420,7 +3531,7 @@
                                 <div class="photo-card-info-detail">💡 拍摄技巧：${site.tips}</div>
                             </div>
                             <div class="photo-card-info-footer">
-                                <div class="photo-card-info-rating">⭐ 4.8</div>
+                                <div class="photo-card-info-rating">⭐ ${site.rating || 4.8}</div>
                             </div>
                             <div class="card-indicator card-indicator-bottom">⬆️ 返回图片</div>
                         </div>
@@ -2448,17 +3559,27 @@
             }
 
             const card = event.currentTarget;
-            const cardPanorama = card.querySelector('.card-panorama');
+            
+            // 添加点击动画
+            card.classList.add('clicking');
+            setTimeout(() => card.classList.remove('clicking'), 300);
 
             // 检查卡片状态
             const isPanoramaDown = card.classList.contains('panorama-down');
 
             if (isPanoramaDown) {
                 // 如果已经是详情页，打开详情模态框
-                openModal(id);
+                setTimeout(() => {
+                    openModal(id);
+                }, 200);
             } else {
                 // 第一次点击，滚动到详情
                 card.classList.add('panorama-down');
+                
+                // 添加触觉反馈（如果支持）
+                if (navigator.vibrate) {
+                    navigator.vibrate(50);
+                }
             }
         }
 
@@ -2467,21 +3588,63 @@
             document.getElementById('navFavoritesCount').textContent = favorites.length;
         }
 
+        // 当前模态框显示的景点ID
+        let currentModalId = null;
+
         // 打开模态框
         function openModal(id) {
             const site = sites.find(s => s.id === id);
             if (!site) return;
+            currentModalId = id;
             document.getElementById('modalImg').src = site.image;
             document.getElementById('modalQuickTitle').textContent = site.name;
             document.getElementById('modalQuickTags').innerHTML = site.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
             document.getElementById('modalTitle').textContent = site.name;
             document.getElementById('modalDesc').textContent = site.desc;
             document.getElementById('modalTags').innerHTML = site.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+            updateModalFavoriteBtn();
             document.getElementById('detailModal').classList.add('show');
+        }
+
+        // 更新模态框收藏按钮状态
+        function updateModalFavoriteBtn() {
+            if (currentModalId === null) return;
+            const isFavorite = favorites.includes(currentModalId);
+            const btn = document.getElementById('modalFavoriteBtn');
+            const icon = document.getElementById('modalFavoriteIcon');
+            const text = document.getElementById('modalFavoriteText');
+            if (isFavorite) {
+                btn.classList.add('active');
+                icon.textContent = '❤️';
+                text.textContent = '已收藏';
+            } else {
+                btn.classList.remove('active');
+                icon.textContent = '🤍';
+                text.textContent = '收藏';
+            }
+        }
+
+        // 切换模态框收藏状态
+        function toggleModalFavorite() {
+            if (currentModalId === null) return;
+            const index = favorites.indexOf(currentModalId);
+            if (index === -1) {
+                favorites.push(currentModalId);
+            } else {
+                favorites.splice(index, 1);
+            }
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            updateNavFavoritesCount();
+            updateModalFavoriteBtn();
+            // 更新卡片上的收藏按钮状态
+            renderSites();
+            renderFavorites();
+            renderPopular();
         }
 
         // 关闭模态框
         function closeModal() {
+            currentModalId = null;
             document.getElementById('detailModal').classList.remove('show');
         }
 
@@ -2497,28 +3660,201 @@
             searchSection.classList.toggle('hidden');
             floatIcon.classList.toggle('show');
         }
+        
+        // 轮播图下方搜索栏功能
+        function handleMainSearch(value) {
+            const clearBtn = document.getElementById('clearMainSearchBtn');
+            const suggestions = document.getElementById('mainSearchSuggestions');
+            
+            clearBtn.style.display = value ? 'block' : 'none';
+            
+            if (value.trim()) {
+                // 实时显示搜索建议
+                const matched = sites.filter(s => 
+                    s.name.includes(value) || 
+                    s.category.includes(value) ||
+                    (s.description && s.description.includes(value))
+                ).slice(0, 5);
+                
+                if (matched.length > 0) {
+                    suggestions.innerHTML = matched.map(s => 
+                        `<li onclick="selectMainSearchSuggestion('${s.name}')">
+                            <span>📍</span>
+                            <div>
+                                <div style="font-weight: 600;">${s.name}</div>
+                                <div style="font-size: 0.8rem; color: #64748b;">${s.category}</div>
+                            </div>
+                        </li>`
+                    ).join('');
+                    suggestions.classList.add('show');
+                } else {
+                    suggestions.classList.remove('show');
+                }
+            } else {
+                suggestions.classList.remove('show');
+            }
+        }
+        
+        function performMainSearch() {
+            const input = document.getElementById('mainSearchInput');
+            const value = input.value.trim();
+            
+            if (value) {
+                // 添加到搜索历史
+                addToSearchHistory(value);
+                // 切换到首页并执行搜索
+                showPage('home');
+                searchSites(value);
+                // 关闭搜索建议
+                document.getElementById('mainSearchSuggestions').classList.remove('show');
+            }
+        }
+        
+        function clearMainSearch() {
+            const input = document.getElementById('mainSearchInput');
+            const clearBtn = document.getElementById('clearMainSearchBtn');
+            const suggestions = document.getElementById('mainSearchSuggestions');
+            input.value = '';
+            clearBtn.style.display = 'none';
+            suggestions.classList.remove('show');
+            input.focus();
+        }
+        
+        function selectMainSearchSuggestion(name) {
+            const input = document.getElementById('mainSearchInput');
+            input.value = name;
+            document.getElementById('mainSearchSuggestions').classList.remove('show');
+            performMainSearch();
+        }
+
+        // 搜索历史
+        let searchHistory = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+        const maxSearchHistory = 8;
+        let activeSuggestionIndex = -1;
+        let searchDebounceTimer = null;
 
         // 初始化搜索
         function initSearch() {
             const input = document.getElementById('searchInput');
+            
+            // 输入事件（防抖）
             input.addEventListener('input', function(e) {
                 const value = e.target.value.trim();
-                if (value) showSuggestions(value);
-                else hideSuggestions();
+                
+                // 更新清除按钮显示
+                const clearBtn = document.querySelector('.clear-button');
+                clearBtn.style.display = value ? 'block' : 'none';
+                
+                clearTimeout(searchDebounceTimer);
+                searchDebounceTimer = setTimeout(() => {
+                    if (value) {
+                        showSuggestions(value);
+                        hideSearchHistory();
+                    } else {
+                        hideSuggestions();
+                        showSearchHistory();
+                    }
+                }, 300);
             });
-            input.addEventListener('keypress', e => { if (e.key === 'Enter') searchSites(); });
-            document.addEventListener('click', e => { if (!e.target.closest('.search-container')) hideSuggestions(); });
+            
+            // 聚焦事件
+            input.addEventListener('focus', function(e) {
+                const value = e.target.value.trim();
+                if (!value) {
+                    showSearchHistory();
+                }
+            });
+            
+            // 键盘事件
+            input.addEventListener('keydown', function(e) {
+                const suggestions = document.querySelectorAll('#suggestionsList li');
+                
+                switch(e.key) {
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        activeSuggestionIndex = Math.min(activeSuggestionIndex + 1, suggestions.length - 1);
+                        updateActiveSuggestion(suggestions);
+                        break;
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        activeSuggestionIndex = Math.max(activeSuggestionIndex - 1, -1);
+                        updateActiveSuggestion(suggestions);
+                        break;
+                    case 'Enter':
+                        e.preventDefault();
+                        if (activeSuggestionIndex >= 0 && suggestions[activeSuggestionIndex]) {
+                            const name = suggestions[activeSuggestionIndex].querySelector('.suggestion-text').textContent;
+                            selectSuggestion(name);
+                        } else {
+                            searchSites();
+                        }
+                        break;
+                    case 'Escape':
+                        hideSuggestions();
+                        hideSearchHistory();
+                        input.blur();
+                        break;
+                }
+            });
+            
+            // 点击外部关闭
+            document.addEventListener('click', e => {
+                if (!e.target.closest('.search-container')) {
+                    hideSuggestions();
+                    hideSearchHistory();
+                }
+            });
+            
+            // 渲染搜索历史
+            renderSearchHistory();
+        }
+
+        // 更新活动建议
+        function updateActiveSuggestion(suggestions) {
+            suggestions.forEach((item, index) => {
+                item.classList.toggle('active', index === activeSuggestionIndex);
+            });
+        }
+
+        // 高亮匹配文本
+        function highlightMatch(text, query) {
+            if (!query) return text;
+            const regex = new RegExp(`(${query})`, 'gi');
+            return text.replace(regex, '<span class="highlight">$1</span>');
         }
 
         // 显示搜索建议
         function showSuggestions(query) {
-            const suggestions = sites.filter(s => s.name.includes(query) || s.desc.includes(query) || s.location.includes(query)).slice(0, 5);
+            activeSuggestionIndex = -1;
+            
+            const suggestions = sites
+                .filter(s => 
+                    s.name.toLowerCase().includes(query.toLowerCase()) || 
+                    s.desc.toLowerCase().includes(query.toLowerCase()) || 
+                    s.location.toLowerCase().includes(query.toLowerCase()) ||
+                    s.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+                )
+                .slice(0, 6);
+            
             const list = document.getElementById('suggestionsList');
+            
             if (suggestions.length) {
-                list.innerHTML = suggestions.map(s => `<li onclick="selectSuggestion('${s.name}')"><span class="suggestion-text">${s.name}</span><span class="suggestion-meta">${s.location}</span></li>`).join('');
+                list.innerHTML = suggestions.map(s => `
+                    <li onclick="selectSuggestion('${s.name}')">
+                        <span class="suggestion-icon">📍</span>
+                        <span class="suggestion-text">${highlightMatch(s.name, query)}</span>
+                        <span class="suggestion-meta">${s.location}</span>
+                    </li>
+                `).join('');
                 document.getElementById('searchSuggestions').classList.add('show');
             } else {
-                list.innerHTML = '<li style="text-align:center;color:#9aaec2;">未找到相关景点</li>';
+                list.innerHTML = `
+                    <li class="search-no-result">
+                        <div class="icon">🔍</div>
+                        <div>未找到相关景点</div>
+                        <div style="font-size:0.8rem;margin-top:0.3rem;">试试其他关键词</div>
+                    </li>
+                `;
                 document.getElementById('searchSuggestions').classList.add('show');
             }
         }
@@ -2526,6 +3862,75 @@
         // 隐藏搜索建议
         function hideSuggestions() {
             document.getElementById('searchSuggestions').classList.remove('show');
+            activeSuggestionIndex = -1;
+        }
+
+        // 显示搜索历史
+        function showSearchHistory() {
+            if (searchHistory.length === 0) return;
+            
+            const historyList = document.getElementById('searchHistoryList');
+            historyList.innerHTML = searchHistory.map((item, index) => `
+                <span class="search-history-item" onclick="selectHistoryItem('${item}')">
+                    ${item}
+                </span>
+            `).join('');
+            
+            document.getElementById('searchHistory').classList.add('show');
+        }
+
+        // 隐藏搜索历史
+        function hideSearchHistory() {
+            document.getElementById('searchHistory').classList.remove('show');
+        }
+
+        // 渲染搜索历史
+        function renderSearchHistory() {
+            const historyList = document.getElementById('searchHistoryList');
+            if (searchHistory.length === 0) {
+                historyList.innerHTML = '<span style="color:#94a3b8;font-size:0.85rem;">暂无搜索历史</span>';
+            } else {
+                historyList.innerHTML = searchHistory.map(item => `
+                    <span class="search-history-item" onclick="selectHistoryItem('${item}')">
+                        ${item}
+                    </span>
+                `).join('');
+            }
+        }
+
+        // 选择历史记录
+        function selectHistoryItem(term) {
+            document.getElementById('searchInput').value = term;
+            hideSearchHistory();
+            searchSites();
+        }
+
+        // 清除搜索历史
+        function clearSearchHistory() {
+            if (confirm('确定要清除所有搜索历史吗？')) {
+                searchHistory = [];
+                localStorage.removeItem('searchHistory');
+                renderSearchHistory();
+                hideSearchHistory();
+            }
+        }
+
+        // 添加到搜索历史
+        function addToSearchHistory(term) {
+            // 移除已存在的相同项
+            searchHistory = searchHistory.filter(item => item !== term);
+            
+            // 添加到开头
+            searchHistory.unshift(term);
+            
+            // 限制数量
+            searchHistory = searchHistory.slice(0, maxSearchHistory);
+            
+            // 保存到本地存储
+            localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+            
+            // 重新渲染
+            renderSearchHistory();
         }
 
         // 选择建议
@@ -2537,12 +3942,48 @@
 
         // 搜索景点
         function searchSites() {
-            const term = document.getElementById('searchInput').value.toLowerCase().trim();
+            const term = document.getElementById('searchInput').value.trim();
             hideSuggestions();
+            hideSearchHistory();
+            
             if (term) {
-                const filtered = sites.filter(s => s.name.toLowerCase().includes(term) || s.desc.toLowerCase().includes(term) || s.location.toLowerCase().includes(term));
-                document.getElementById('searchStats').textContent = `找到 ${filtered.length} 个结果`;
-                renderSites(filtered);
+                const filtered = sites.filter(s => 
+                    s.name.toLowerCase().includes(term.toLowerCase()) || 
+                    s.desc.toLowerCase().includes(term.toLowerCase()) || 
+                    s.location.toLowerCase().includes(term.toLowerCase()) ||
+                    s.tags.some(tag => tag.toLowerCase().includes(term.toLowerCase()))
+                );
+                
+                if (filtered.length === 0) {
+                    document.getElementById('searchStats').innerHTML = `
+                        <span style="color:#94a3b8;">未找到 "<strong>${term}"</strong> 的结果</span>
+                        <span style="color:#667eea;margin-left:1rem;cursor:pointer;" onclick="clearSearch()">重置搜索</span>
+                    `;
+                    document.getElementById('sitesGrid').innerHTML = `
+                        <div style="grid-column:1/-1;text-align:center;padding:4rem;">
+                            <div style="font-size:5rem;margin-bottom:1.5rem;">🔍</div>
+                            <h3 style="color:#1e293b;margin-bottom:1rem;font-size:1.5rem;">未找到相关景点</h3>
+                            <p style="color:#64748b;margin-bottom:1.5rem;">试试其他关键词，或者查看热门搜索</p>
+                            <button onclick="clearSearch()" style="padding:0.8rem 2rem;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;border:none;border-radius:10px;cursor:pointer;font-size:1rem;transition:all 0.3s;">清除搜索</button>
+                        </div>
+                    `;
+                    document.getElementById('pagination').innerHTML = '';
+                } else {
+                    document.getElementById('searchStats').innerHTML = `
+                        <span>找到 <strong>${filtered.length}</strong> 个结果</span>
+                        <span style="color:#94a3b8;margin-left:0.5rem;">关键词: "${term}"</span>
+                        <span style="color:#667eea;margin-left:1rem;cursor:pointer;" onclick="clearSearch()">✕</span>
+                    `;
+                    
+                    // 临时替换sites用于渲染
+                    const originalSites = window.sites;
+                    window.sites = filtered;
+                    renderSites();
+                    window.sites = originalSites;
+                    
+                    // 添加到搜索历史
+                    addToSearchHistory(term);
+                }
             } else {
                 document.getElementById('searchStats').textContent = '';
                 renderSites();
@@ -2557,8 +3998,17 @@
 
         // 清除搜索
         function clearSearch() {
-            document.getElementById('searchInput').value = '';
+            const input = document.getElementById('searchInput');
+            input.value = '';
+            input.focus();
             hideSuggestions();
+            hideSearchHistory();
+            document.getElementById('searchStats').textContent = '';
+            
+            // 更新清除按钮
+            const clearBtn = document.querySelector('.clear-button');
+            clearBtn.style.display = 'none';
+            
             renderSites();
         }
 
@@ -2613,10 +4063,31 @@
             const cardPanorama = card.querySelector('.photo-card-panorama');
             const isPanoramaDown = card.classList.contains('panorama-down');
 
+            // 添加点击涟漪动画
+            card.style.setProperty('--click-x', `${event.offsetX}px`);
+            card.style.setProperty('--click-y', `${event.offsetY}px`);
+            card.classList.add('ripple');
+            setTimeout(() => card.classList.remove('ripple'), 600);
+
+            // 触觉反馈
+            if (navigator.vibrate) {
+                navigator.vibrate(30);
+            }
+
             if (isPanoramaDown) {
-                openPhotoModal(id);
+                // 返回图片时添加缩小再放大动画
+                card.classList.add('card-return');
+                setTimeout(() => {
+                    card.classList.remove('panorama-down');
+                    card.classList.remove('card-return');
+                }, 200);
             } else {
-                card.classList.add('panorama-down');
+                // 切换到详情时添加缩放动画
+                card.classList.add('card-expand');
+                setTimeout(() => {
+                    card.classList.add('panorama-down');
+                    card.classList.remove('card-expand');
+                }, 150);
             }
         }
 
@@ -2636,7 +4107,7 @@
                                 <img class="photo-card-img" src="${site.image}" alt="${site.name}">
                                 <button class="photo-favorite-btn active" onclick="togglePhotoFavorite(${site.id}, event)">❤️</button>
                             </div>
-                            <div class="card-indicator card-indicator-top">⬇️ 滑动查看详情</div>
+                            <div class="card-indicator card-indicator-top">⬇️ 点击查看详情</div>
                         </div>
                         <div class="photo-card-info">
                             <div class="photo-card-info-title">${site.name}</div>
@@ -2653,7 +4124,7 @@
                                 <div class="photo-card-info-detail">💡 拍摄技巧：${site.tips}</div>
                             </div>
                             <div class="photo-card-info-footer">
-                                <div class="photo-card-info-rating">⭐ 4.8</div>
+                                <div class="photo-card-info-rating">⭐ ${site.rating || 4.8}</div>
                             </div>
                             <div class="card-indicator card-indicator-bottom">⬆️ 返回图片</div>
                         </div>
@@ -2670,7 +4141,12 @@
             const container = document.getElementById('photoGrid');
             let filteredSites = photoSites;
             if (category !== 'all') {
-                filteredSites = photoSites.filter(s => s.category === category);
+                if (category === 'offbeat') {
+                    // 小众分类：筛选ID >= 200 的图片
+                    filteredSites = photoSites.filter(s => s.id >= 200);
+                } else {
+                    filteredSites = photoSites.filter(s => s.category === category);
+                }
             }
             container.innerHTML = filteredSites.map(site => `
                 <div class="photo-card" data-id="${site.id}" onclick="handlePhotoCardClick(event, ${site.id})">
@@ -2680,7 +4156,7 @@
                                 <img class="photo-card-img" src="${site.image}" alt="${site.name}" loading="lazy">
                                 <button class="photo-favorite-btn ${photoFavorites.includes(site.id) ? 'active' : ''}" onclick="togglePhotoFavorite(${site.id}, event)">${photoFavorites.includes(site.id) ? '❤️' : '🤍'}</button>
                             </div>
-                            <div class="card-indicator card-indicator-top">⬇️ 滑动查看详情</div>
+                            <div class="card-indicator card-indicator-top">⬇️ 点击查看详情</div>
                         </div>
                         <div class="photo-card-info">
                             <div class="photo-card-info-title">${site.name}</div>
@@ -2697,7 +4173,7 @@
                                 <div class="photo-card-info-detail">💡 拍摄技巧：${site.tips}</div>
                             </div>
                             <div class="photo-card-info-footer">
-                                <div class="photo-card-info-rating">⭐ 4.8</div>
+                                <div class="photo-card-info-rating">⭐ ${site.rating || 4.8}</div>
                             </div>
                             <div class="card-indicator card-indicator-bottom">⬆️ 返回图片</div>
                         </div>
@@ -2813,15 +4289,16 @@
             updateNavFavoritesCount();
             renderPhotography();
             renderPopular();
-            renderHiddenGems();
             initCardScroll();
         });
 
         // 滚动事件
         window.onscroll = () => {
             const btn = document.getElementById('backToTop');
-            if (window.scrollY > 300) btn.classList.add('show');
-            else btn.classList.remove('show');
+            if (btn) {
+                if (window.scrollY > 300) btn.classList.add('show');
+                else btn.classList.remove('show');
+            }
         };
 
         // 点击模态框外部关闭
@@ -3116,7 +4593,7 @@
             
             // 澳门景点推荐
             if (lowerMsg.includes('推荐') && (lowerMsg.includes('景点') || lowerMsg.includes('必去'))) {
-                return `澳门必去景点推荐：\n\n1. 大三巴牌坊 - 澳门最具代表性的地标，世界文化遗产\n2. 澳门旅游塔 - 高338米，可俯瞰整个澳门\n3. 龙环葡韵 - 薄荷绿色的葡式建筑群\n4. 议事亭前地 - 澳门市中心的核心区域\n5. 威尼斯人度假村 - 亚洲最大综合度假村\n\n你想了解哪个景点的详细信息吗？`;
+                return `澳门必去景点推荐：\n\n1. 妈阁庙 - 澳门最古老的庙宇，世界文化遗产\n2. 大三巴牌坊 - 澳门最具代表性的地标\n3. 澳门炮台 - 历史悠久的军事防御设施\n4. 黑沙湾 - 独特的黑色海滩风光\n\n你想了解哪个景点的详细信息吗？`;
             }
             
             // 旅游路线
